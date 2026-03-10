@@ -114,17 +114,17 @@ def update_screen():
 
     draw_b.line((0, 9 , right_edge, 9), fill=0, width=1)
 
-    # draw_b.text((-1, -3), hostname, font=font_mono_small, fill=0)
-    # draw_b.text((right_edge,-2), f"{cpu_temp}C", font=font_mono_tiny, fill=0, anchor="ra")
+    draw_b.text((-1, 9), hostname, font=font_mono_small, fill=0)
+    uptime_days = uptime.split('d')[0] if 'd' in uptime else "N/A"
+    draw_b.text((right_edge, 9), f"{uptime_days}d", font=font_mono_tiny, fill=0, anchor="ra")
 
-    # draw_b.text((-1, 8), ip_addr, font=font_mono_tiny, fill=0)
-    # draw_b.text((right_edge,8), f"{signal}%", font=font_mono_tiny, fill=0, anchor="ra")
+    draw_b.text((-1, 18), ip_addr, font=font_mono_tiny, fill=0)
+    draw_b.text((right_edge, 18), f"{signal}%", font=font_mono_tiny, fill=0, anchor="ra")
 
-    # uptime_days = uptime.split('d')[0] if 'd' in uptime else "N/A"
+    draw_b.text((-1, 27), load_avg, font=font_mono_tiny, fill=0)
+    draw_b.text((right_edge,27), f"{cpu_temp}C", font=font_mono_tiny, fill=0, anchor="ra")
 
-    # draw_b.text((right_edge, 18), f"{uptime_days}d", font=font_mono_tiny, fill=0, anchor="ra")
-    
-    # draw_b.text((-1, 28), load_avg, font=font_mono_tiny, fill=0)
+    draw_b.line((0, 36 , right_edge, 36), fill=0, width=1)
 
     # Vertical orientation
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
