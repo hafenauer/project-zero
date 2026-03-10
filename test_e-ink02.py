@@ -112,8 +112,8 @@ def update_screen():
     draw_b.text((-1, 8), ip_addr, font=font_mono_tiny, fill=0)
     draw_b.text((right_edge,8), f"{signal}%", font=font_mono_tiny, fill=0, anchor="ra")
 
-    draw_b.text((0, 21), uptime, font=font_mono_small, fill=0)
-    draw_b.text((0, 41), load_avg, font=font_mono_small, fill=0)
+    draw_b.text((0, 21), uptime, font=font_mono_tiny, fill=0)
+    draw_b.text((0, 41), load_avg, font=font_mono_tiny, fill=0)
 
     # Vertical orientation
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
