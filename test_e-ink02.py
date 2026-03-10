@@ -104,10 +104,15 @@ def update_screen():
     draw_b = ImageDraw.Draw(img_b)
     # draw_b.rectangle((0, 0, 21, 21), outline=0)
 
-    draw_b.text((0, -1), hostname, font=font_mono_small, fill=0)
-    draw_b.text((0, 10), ip_addr, font=font_mono_small, fill=0)
+    right_edge = epd.width
+
+    draw_b.text((0, -3), hostname, font=font_mono_small, fill=0)
+    draw_b.text((right_edge,-3), f"{cpu_temp}C", font=font_mono_small, fill=0, anchor="ra")
+
+    draw_b.text((0, 9), ip_addr, font=font_mono_small, fill=0)
+    draw_b.text((right_edge,9), f"{signal}%", font=font_mono_small, fill=0, anchor="ra")
+
     draw_b.text((0, 21), uptime, font=font_mono_small, fill=0)
-    draw_b.text((0, 31), f"{cpu_temp}C | {signal}% ", font=font_mono_small, fill=0)
     draw_b.text((0, 41), load_avg, font=font_mono_small, fill=0)
 
     # Vertical orientation
