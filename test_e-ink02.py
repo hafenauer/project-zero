@@ -91,19 +91,15 @@ def update_screen():
     img_b = Image.new('1', (epd.width, epd.height), 255)
     img_r = Image.new('1', (epd.width, epd.height), 255)
     
-    # Construct path to the gif
     avatar_path = os.path.join(script_dir, "assets", "images", "avatar.gif")
     
     try:
-        # Load the gif and ensure it is in 1-bit B/W mode
-        avatar = Image.open(avatar_path).convert('1')
-        
-        # Paste it onto the black image buffer at top-left corner (0, 0)
+        avatar = Image.open(avatar_path)
         img_b.paste(avatar, (0, 0))
     except Exception as e:
         print(f"Error loading avatar: {e}")
 
-    # Rotate 180 degrees (vertical orientation, upside down depending on your physical setup)
+    # Vertical orientation
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
     
     # Send buffers to display
