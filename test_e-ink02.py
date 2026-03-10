@@ -103,7 +103,7 @@ def update_screen():
     draw_b = ImageDraw.Draw(img_b)
     draw_b.rectangle((0, 0, 38, 38), outline=0)  
 
-    draw_b.rectangle((0, 40, 16, 104), fill=0)
+    draw_b.rectangle((40, 0, 104, 16), fill=0)
 
     # Vertical orientation
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
