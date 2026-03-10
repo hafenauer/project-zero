@@ -102,10 +102,10 @@ def update_screen():
         print(f"Error loading avatar: {e}")
 
     draw_b = ImageDraw.Draw(img_b)
-    draw_b.rectangle((0, 0, 20, 20), outline=0)
+    draw_b.rectangle((0, 0, 19, 19), outline=0)
 
-    draw_b.text((22, -1), hostname, font=font_mono_small, fill=0)
-    draw_b.text((22, 10), ip_addr, font=font_mono_tiny, fill=0)
+    draw_b.text((21, -1), hostname, font=font_mono_small, fill=0)
+    draw_b.text((21, 10), ip_addr, font=font_mono_tiny, fill=0)
     draw_b.text((0, 21), uptime, font=font_mono_tiny, fill=0)
     draw_b.text((0, 31), f"{cpu_temp}C | {signal}% ", font=font_mono_tiny, fill=0)
     draw_b.text((0, 41), load_avg, font=font_mono_tiny, fill=0)
