@@ -102,7 +102,7 @@ def update_screen():
         draw_b.text((5, y_offset), f"{size} {test_string}", font=font, fill=0)
         y_offset += size + 4
 
-    #img_b, img_r = img_b.rotate(180), img_r.rotate(180)
+    img_b, img_r = img_b.rotate(90), img_r.rotate(90)
     epd.display(epd.getbuffer(img_b), epd.getbuffer(img_r))
     epd.sleep()
 
