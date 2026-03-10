@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Quick Push (Testing)",
+            "type": "shell",
+            "command": "git add . && git commit -m 'Auto testing update' && git push",
+            "problemMatcher": [],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        }
+    ]
+}
