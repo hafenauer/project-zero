@@ -95,12 +95,12 @@ def update_screen():
     
     try:
         avatar = Image.open(avatar_path)
-        img_b.paste(avatar, (1, 1))
+        img_b.paste(avatar, (3, 3))
     except Exception as e:
         print(f"Error loading avatar: {e}")
 
     draw_b = ImageDraw.Draw(img_b)
-    draw_b.rectangle((0, 0, 33, 33), outline=0)  
+    draw_b.rectangle((0, 0, 38, 38), outline=0)  
 
     # Vertical orientation
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
