@@ -30,12 +30,13 @@ except ImportError:
 epd = EPD()
 
 font_path_fixedsys_excelsior = os.path.join(script_dir, "assets", "fonts", "FSEX302.ttf")
-font_path = font_path_fixedsys_excelsior
+font_path_atkinson_hyperlegible_next = os.path.join(script_dir, "assets", "fonts", "AtkinsonHyperlegibleNext-Regular.ttf")
+font_path = font_path_atkinson_hyperlegible_next
 try:
+    font_mono_tiny   = ImageFont.truetype(font_path, 8)
     font_mono_small  = ImageFont.truetype(font_path, 10)
     font_mono_label  = ImageFont.truetype(font_path, 12)
     font_mono_data   = ImageFont.truetype(font_path, 22)
-    font_mono_tiny   = ImageFont.truetype(font_path, 8)
     font_mono_icon   = ImageFont.truetype(font_path, 23)
 except Exception:
     font_mono_small = font_mono_label = font_mono_data = font_mono_tiny = ImageFont.load_default()
