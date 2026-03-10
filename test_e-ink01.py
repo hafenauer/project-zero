@@ -36,7 +36,7 @@ font_path_roboto_mono = os.path.join(script_dir, "assets", "fonts", "RobotoMono-
 font_path_ibm_plex_mono = os.path.join(script_dir, "assets", "fonts", "IBMPlexMono-Regular.ttf")
 font_path_dejavu_sans_mono = os.path.join(script_dir, "assets", "fonts", "DejaVuSansMono.ttf")
 font_path = font_path_dejavu_sans_mono
-font_path_2 = font_path_roboto_mono
+font_path_2 = font_path_fixedsys_excelsior
 try:
     font_mono_tiny   = ImageFont.truetype(font_path, 9)
     font_mono_small  = ImageFont.truetype(font_path, 10)
