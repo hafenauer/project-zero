@@ -107,11 +107,11 @@ def update_screen():
     right_edge = epd.width
 
     draw_b.rectangle((0, 0, epd.width, 10), fill=255)
-    date = time.strftime('%Y-%m-%d')
-    draw_b.text((-1, -2), date, font=font_mono_tiny, fill=255)
+    date_str = time.strftime('%Y-%m-%d')
+    draw_b.text((-1, -2), date_str, font=font_mono_tiny, fill=255)
 
-    time = time.strftime('%H:%M')
-    draw_b.text((right_edge,-2), time, font=font_mono_tiny, fill=255, anchor="ra")
+    time_str = time.strftime('%H:%M')
+    draw_b.text((right_edge,-2), time_str, font=font_mono_tiny, fill=255, anchor="ra")
 
     # draw_b.text((-1, -3), hostname, font=font_mono_small, fill=0)
     # draw_b.text((right_edge,-2), f"{cpu_temp}C", font=font_mono_tiny, fill=0, anchor="ra")
