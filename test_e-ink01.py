@@ -35,7 +35,7 @@ font_path_jetbrains_mono = os.path.join(script_dir, "assets", "fonts", "JetBrain
 font_path_roboto_mono = os.path.join(script_dir, "assets", "fonts", "RobotoMono-Regular.ttf")
 font_path = font_path_roboto_mono
 try:
-    font_mono_tiny   = ImageFont.truetype(font_path, 8)
+    font_mono_tiny   = ImageFont.truetype(font_path, 9)
     font_mono_small  = ImageFont.truetype(font_path, 10)
     font_mono_label  = ImageFont.truetype(font_path, 12)
     font_mono_data   = ImageFont.truetype(font_path, 22)
