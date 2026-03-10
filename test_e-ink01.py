@@ -33,7 +33,8 @@ font_path_fixedsys_excelsior = os.path.join(script_dir, "assets", "fonts", "FSEX
 font_path_atkinson_hyperlegible_next = os.path.join(script_dir, "assets", "fonts", "AtkinsonHyperlegibleNext-Regular.ttf")
 font_path_jetbrains_mono = os.path.join(script_dir, "assets", "fonts", "JetBrainsMono-Regular.ttf")
 font_path_roboto_mono = os.path.join(script_dir, "assets", "fonts", "RobotoMono-Regular.ttf")
-font_path = font_path_roboto_mono
+font_path_ibm_plex_mono = os.path.join(script_dir, "assets", "fonts", "IBMPlexMono-Regular.ttf")
+font_path = font_path_ibm_plex_mono
 try:
     font_mono_tiny   = ImageFont.truetype(font_path, 9)
     font_mono_small  = ImageFont.truetype(font_path, 10)
