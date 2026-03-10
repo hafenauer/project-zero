@@ -132,4 +132,4 @@ def update_screen(temp, hum):
     epd.sleep()
 
 
-update_screen(99.9, 99)
+update_screen(33.3, 44)
