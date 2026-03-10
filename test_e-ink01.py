@@ -29,12 +29,13 @@ except ImportError:
 
 epd = EPD()
 
+font_path_unifont = os.path.join(script_dir, "assets", "fonts", "unifont-17.0.03.otf")
 try:
-    font_mono_small  = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', 10)
-    font_mono_label  = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', 12)
-    font_mono_data   = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', 22)
-    font_mono_tiny   = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', 9)
-    font_mono_icon   = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', 23)
+    font_mono_small  = ImageFont.truetype(font_path_unifont, 10)
+    font_mono_label  = ImageFont.truetype(font_path_unifont, 12)
+    font_mono_data   = ImageFont.truetype(font_path_unifont, 22)
+    font_mono_tiny   = ImageFont.truetype(font_path_unifont, 9)
+    font_mono_icon   = ImageFont.truetype(font_path_unifont, 23)
 except Exception:
     font_mono_small = font_mono_label = font_mono_data = font_mono_tiny = ImageFont.load_default()
 
