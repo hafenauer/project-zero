@@ -88,6 +88,7 @@ def update_screen():
     epd.init()
     
     # Initialize vertical canvases (width, height)
+    # 212 x 104 for 2.13" V3 display https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(B)_Manual
     img_b = Image.new('1', (epd.width, epd.height), 255)
     img_r = Image.new('1', (epd.width, epd.height), 255)
     
@@ -101,6 +102,8 @@ def update_screen():
 
     draw_b = ImageDraw.Draw(img_b)
     draw_b.rectangle((0, 0, 38, 38), outline=0)  
+
+    draw_b.rectangle((0, 40, 16, 104), fill=0)
 
     # Vertical orientation
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
