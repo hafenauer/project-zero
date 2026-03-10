@@ -84,14 +84,14 @@ def get_sys_info():
 
 def update_screen():
     hostname, ip_addr, _, _, _, _ = get_sys_info()
-    test_string = f"0123456789.°C% {hostname} {ip_addr}"
+    test_string = f"{hostname}0123456789°%{ip_addr}"
 
     epd.init()
     img_b = Image.new('1', (epd.width, epd.height), 255)
     img_r = Image.new('1', (epd.width, epd.height), 255)
     draw_b = ImageDraw.Draw(img_b)
 
-    sizes = [8, 9, 10, 11, 12, 14, 20, 22]
+    sizes = [8, 9, 10, 11, 12, 22]
     y_offset = 2
     for size in sizes:
         try:
@@ -102,7 +102,7 @@ def update_screen():
         draw_b.text((5, y_offset), f"{size} {test_string}", font=font, fill=0)
         y_offset += size + 4
 
-    img_b, img_r = img_b.rotate(180), img_r.rotate(180)
+    #img_b, img_r = img_b.rotate(180), img_r.rotate(180)
     epd.display(epd.getbuffer(img_b), epd.getbuffer(img_r))
     epd.sleep()
 
