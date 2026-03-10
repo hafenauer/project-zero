@@ -36,6 +36,7 @@ font_path_roboto_mono = os.path.join(script_dir, "assets", "fonts", "RobotoMono-
 font_path_ibm_plex_mono = os.path.join(script_dir, "assets", "fonts", "IBMPlexMono-Regular.ttf")
 font_path_dejavu_sans_mono = os.path.join(script_dir, "assets", "fonts", "DejaVuSansMono.ttf")
 font_path = font_path_dejavu_sans_mono
+font_path_2 = font_path_roboto_mono
 try:
     font_mono_tiny   = ImageFont.truetype(font_path, 9)
     font_mono_small  = ImageFont.truetype(font_path, 10)
@@ -94,16 +95,24 @@ def update_screen():
     img_r = Image.new('1', (epd.height, epd.width), 255)
     draw_b = ImageDraw.Draw(img_b)
 
-    sizes = [8, 9, 10, 11, 12, 22]
+    sizes = [8, 9, 10, 11, 12]
     y_offset = 2
     for size in sizes:
         try:
-            font = ImageFont.truetype(font_path, size)
+            font1 = ImageFont.truetype(font_path, size)
         except Exception:
-            font = ImageFont.load_default()
+            font1 = ImageFont.load_default()
+            
+        try:
+            font2 = ImageFont.truetype(font_path_2, size)
+        except Exception:
+            font2 = ImageFont.load_default()
         
-        draw_b.text((5, y_offset), f"{size} {test_string}", font=font, fill=0)
-        y_offset += size + 4
+        draw_b.text((5, y_offset), f"{size} {test_string}", font=font1, fill=0)
+        y_offset += size + 2
+        
+        draw_b.text((5, y_offset), f"{size} {test_string}", font=font2, fill=0)
+        y_offset += size + 6
 
     img_b, img_r = img_b.rotate(270, expand=True), img_r.rotate(270, expand=True)
     epd.display(epd.getbuffer(img_b), epd.getbuffer(img_r))
