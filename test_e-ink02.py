@@ -93,22 +93,22 @@ def update_screen():
     img_b = Image.new('1', (epd.width, epd.height), 255)
     img_r = Image.new('1', (epd.width, epd.height), 255)
     
-    avatar_path = os.path.join(script_dir, "assets", "images", "avatar16.gif")
+    # avatar_path = os.path.join(script_dir, "assets", "images", "avatar16.gif")
     
-    try:
-        avatar = Image.open(avatar_path)
-        img_b.paste(avatar, (2, 3))
-    except Exception as e:
-        print(f"Error loading avatar: {e}")
+    # try:
+    #     avatar = Image.open(avatar_path)
+    #     img_b.paste(avatar, (2, 3))
+    # except Exception as e:
+    #     print(f"Error loading avatar: {e}")
 
     draw_b = ImageDraw.Draw(img_b)
-    draw_b.rectangle((0, 0, 21, 21), outline=0)
+    # draw_b.rectangle((0, 0, 21, 21), outline=0)
 
-    draw_b.text((23, -1), hostname, font=font_mono_small, fill=0)
-    draw_b.text((23, 10), ip_addr, font=font_mono_tiny, fill=0)
-    draw_b.text((0, 21), uptime, font=font_mono_tiny, fill=0)
-    draw_b.text((0, 31), f"{cpu_temp}C | {signal}% ", font=font_mono_tiny, fill=0)
-    draw_b.text((0, 41), load_avg, font=font_mono_tiny, fill=0)
+    draw_b.text((0, -1), hostname, font=font_mono_small, fill=0)
+    draw_b.text((0, 10), ip_addr, font=font_mono_small, fill=0)
+    draw_b.text((0, 21), uptime, font=font_mono_small, fill=0)
+    draw_b.text((0, 31), f"{cpu_temp}C | {signal}% ", font=font_mono_small, fill=0)
+    draw_b.text((0, 41), load_avg, font=font_mono_small, fill=0)
 
     # Vertical orientation
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
