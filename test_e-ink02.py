@@ -106,11 +106,11 @@ def update_screen():
 
     right_edge = epd.width
 
-    draw_b.text((-2, -4), hostname, font=font_mono_small, fill=0)
-    draw_b.text((right_edge,-3), f"{cpu_temp}C", font=font_mono_small, fill=0, anchor="ra")
+    draw_b.text((-1, -3), hostname, font=font_mono_small, fill=0)
+    draw_b.text((right_edge+1,-3), f"{cpu_temp}C", font=font_mono_small, fill=0, anchor="ra")
 
     draw_b.text((0, 7), ip_addr, font=font_mono_small, fill=0)
-    draw_b.text((right_edge,7), f"{signal}%", font=font_mono_small, fill=0, anchor="ra")
+    draw_b.text((right_edge+1,7), f"{signal}%", font=font_mono_small, fill=0, anchor="ra")
 
     draw_b.text((0, 21), uptime, font=font_mono_small, fill=0)
     draw_b.text((0, 41), load_avg, font=font_mono_small, fill=0)
