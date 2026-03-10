@@ -106,7 +106,7 @@ def update_screen():
 
     right_edge = epd.width
 
-    draw_b.rectangle((0, 0, epd.width, 10), fill=255)
+    draw_b.rectangle((0, 0, epd.width, 10), fill=0)
     date_str = time.strftime('%Y-%m-%d')
     draw_b.text((-1, -2), date_str, font=font_mono_tiny, fill=255)
 
