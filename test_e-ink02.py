@@ -85,6 +85,7 @@ def get_sys_info():
     return hostname, ip, signal, uptime, cpu_temp, load_avg
 
 def update_screen():
+    hostname, ip_addr, signal, uptime, cpu_temp, load_avg = get_sys_info()
     epd.init()
     
     # Initialize vertical canvases (width, height)
@@ -96,14 +97,14 @@ def update_screen():
     
     try:
         avatar = Image.open(avatar_path)
-        img_b.paste(avatar, (3, 3))
+        img_b.paste(avatar, (4, 4))
     except Exception as e:
         print(f"Error loading avatar: {e}")
 
     draw_b = ImageDraw.Draw(img_b)
-    draw_b.rectangle((0, 0, 38, 38), outline=0)  
+    draw_b.rectangle((0, 0, 40, 40), outline=0)  
 
-    draw_b.rectangle((40, 0, 104, 16), fill=0)
+    draw_b.text((42, 0), hostname, font=font_mono_small, fill=0)
 
     # Vertical orientation
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
