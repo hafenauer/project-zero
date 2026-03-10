@@ -82,8 +82,6 @@ def update_screen(temp, hum):
     ext_t, ext_h = get_weather()
     curr_date, curr_time = time.strftime("%Y-%m-%d"), time.strftime("%H:%M:%S")
 
-    t_arrow = "↑" if last_t is not None and temp > last_t else "↓" if last_t is not None and temp < last_t else ""
-    h_arrow = "↑" if last_h is not None and hum > last_h else "↓" if last_h is not None and hum < last_h else ""
     last_t, last_h = temp, hum
 
     epd.init()
@@ -104,14 +102,12 @@ def update_screen(temp, hum):
     # --- Temp (53-106) ---
     draw_r.text((5, 56), "Temperature", font=font_mono_label, fill=0)
     draw_b.text((5, 71), f"{temp:.1f}°C", font=font_mono_data, fill=0)
-    draw_b.text((right_edge, 69), t_arrow, font=font_mono_icon, fill=0, anchor="ra")
     draw_b.text((5, 94), f"Outside: {ext_t}°C" if ext_t else "Outside: --", font=font_mono_tiny, fill=0)
     draw_b.line((5, 106, epd.width-5, 106), fill=0, width=1)
 
     # --- Hum (106-159) ---
     draw_r.text((5, 109), "Humidity", font=font_mono_label, fill=0)
     draw_b.text((5, 124), f"{int(hum)}%", font=font_mono_data, fill=0)
-    draw_b.text((right_edge, 122), h_arrow, font=font_mono_icon, fill=0, anchor="ra")
     draw_b.text((5, 147), f"Outside: {int(ext_h)}%" if ext_h else "Outside: --", font=font_mono_tiny, fill=0)
     draw_b.line((5, 159, epd.width-5, 159), fill=0, width=1)
 
