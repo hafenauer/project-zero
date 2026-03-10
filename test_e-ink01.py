@@ -82,60 +82,29 @@ def get_sys_info():
 
     return hostname, ip, signal, uptime, cpu_temp, load_avg
 
-def update_screen(temp, hum):
-    global last_t, last_h
-    hostname, ip_addr, signal, uptime, cpu_temp, load_avg = get_sys_info()
-    ext_t, ext_h = get_weather()
-    curr_date, curr_time = time.strftime("%Y-%m-%d"), time.strftime("%H:%M:%S")
-
-    last_t, last_h = temp, hum
+def update_screen():
+    hostname, ip_addr, _, _, _, _ = get_sys_info()
+    test_string = f"0123456789.°C% {hostname} {ip_addr}"
 
     epd.init()
-    img_b, img_r = Image.new('1', (epd.width, epd.height), 255), Image.new('1', (epd.width, epd.height), 255)
-    draw_b, draw_r = ImageDraw.Draw(img_b), ImageDraw.Draw(img_r)
+    img_b = Image.new('1', (epd.width, epd.height), 255)
+    img_r = Image.new('1', (epd.width, epd.height), 255)
+    draw_b = ImageDraw.Draw(img_b)
 
-    right_edge = epd.width - 5
-
-    # --- Header (0-53) ---
-    draw_b.text((5, 1), hostname, font=font_mono_small, fill=0)
-    draw_b.text((right_edge,2), f"{cpu_temp}C", font=font_mono_tiny, fill=0, anchor="ra")
-    draw_b.text((5, 13), f"{uptime}", font=font_mono_tiny, fill=0)
-    draw_b.text((5, 25), f"{ip_addr}", font=font_mono_tiny, fill=0)
-    draw_b.text((right_edge, 25), f"{signal}%", font=font_mono_tiny, fill=0, anchor="ra")
-    draw_b.text((5, 37), f"{load_avg}", font=font_mono_tiny, fill=0)
-    draw_b.line((5, 53, epd.width-5, 53), fill=0, width=1)
-
-    # --- Temp (53-106) ---
-    draw_r.text((5, 56), "Temperature", font=font_mono_label, fill=0)
-    draw_b.text((5, 71), f"{temp:.1f}°C", font=font_mono_data, fill=0)
-    draw_b.text((5, 94), f"Outside: {ext_t}°C" if ext_t else "Outside: --", font=font_mono_tiny, fill=0)
-    draw_b.line((5, 106, epd.width-5, 106), fill=0, width=1)
-
-    # --- Hum (106-159) ---
-    draw_r.text((5, 109), "Humidity", font=font_mono_label, fill=0)
-    draw_b.text((5, 124), f"{int(hum)}%", font=font_mono_data, fill=0)
-    draw_b.text((5, 147), f"Outside: {int(ext_h)}%" if ext_h else "Outside: --", font=font_mono_tiny, fill=0)
-    draw_b.line((5, 159, epd.width-5, 159), fill=0, width=1)
-
-    # --- Footer (159-212) ---
-    draw_b.text((5, 162), "Last update:", font=font_mono_tiny, fill=0)
-    draw_b.text((5, 174), f"{curr_date}", font=font_mono_tiny, fill=0)
-    draw_b.text((5, 186), f"{curr_time}", font=font_mono_tiny, fill=0)
-    draw_b.text((5, 198), "kthxbye", font=font_mono_small, fill=0)
-
-    # --- Disconnected Indicator ---
-    box_w, box_h = 28, 13
-    box_x = right_edge - box_w
-    box_y = epd.height - box_h - 2
-
-    # Draw red box (0 = red pigment on img_r layer)
-    draw_r.rectangle((box_x, box_y, box_x + box_w, box_y + box_h), fill=0)
-    # "Cut out" text from red box (255 = no pigment, leaving white paper showing through)
-    draw_r.text((box_x + 2, box_y + 1), "MQTT", font=font_mono_small, fill=255)
+    sizes = [8, 9, 10, 11, 12, 14, 20, 22]
+    y_offset = 2
+    for size in sizes:
+        try:
+            font = ImageFont.truetype(font_path, size)
+        except Exception:
+            font = ImageFont.load_default()
+        
+        draw_b.text((5, y_offset), f"{size} {test_string}", font=font, fill=0)
+        y_offset += size + 4
 
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
     epd.display(epd.getbuffer(img_b), epd.getbuffer(img_r))
     epd.sleep()
 
 
-update_screen(29.1, 20)
+update_screen()
