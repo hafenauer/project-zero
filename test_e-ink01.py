@@ -31,7 +31,8 @@ epd = EPD()
 
 font_path_fixedsys_excelsior = os.path.join(script_dir, "assets", "fonts", "FSEX302.ttf")
 font_path_atkinson_hyperlegible_next = os.path.join(script_dir, "assets", "fonts", "AtkinsonHyperlegibleNext-Regular.ttf")
-font_path = font_path_atkinson_hyperlegible_next
+font_path_jetbrains_mono = os.path.join(script_dir, "assets", "fonts", "JetBrainsMono-Regular.ttf")
+font_path = font_path_jetbrains_mono
 try:
     font_mono_tiny   = ImageFont.truetype(font_path, 8)
     font_mono_small  = ImageFont.truetype(font_path, 10)
