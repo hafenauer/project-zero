@@ -105,6 +105,10 @@ def update_screen():
     draw_b.rectangle((0, 0, 40, 40), outline=0)  
 
     draw_b.text((42, 0), hostname, font=font_mono_small, fill=0)
+    draw_b.text((42, 11), ip_addr, font=font_mono_tiny, fill=0)
+    draw_b.text((42, 21), uptime, font=font_mono_tiny, fill=0)
+    draw_b.text((42, 31), f"{cpu_temp}C | {signal}% ", font=font_mono_tiny, fill=0)
+    draw_b.text((42, 41), load_avg, font=font_mono_tiny, fill=0)
 
     # Vertical orientation
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
