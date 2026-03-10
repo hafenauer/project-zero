@@ -1,0 +1,18 @@
+name: Deploy and Run on Raspberry Pi
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  update-and-run:
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull latest code and execute
+        run: |
+          cd ~/project-zero
+          git pull
+          python3 test_e-ink01.py
