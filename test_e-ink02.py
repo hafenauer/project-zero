@@ -39,14 +39,14 @@ font_path_dejavu_sans_mono = os.path.join(script_dir, "assets", "fonts", "DejaVu
 font_path = font_path_dejavu_sans_mono
 font_path_2 = font_path_fixedsys_excelsior
 try:
-    font_mono_tiny   = ImageFont.truetype(font_path, 9)
-    font_mono_small  = ImageFont.truetype(font_path, 10)
-    font_mono_medium = ImageFont.truetype(font_path_ibm_plex_mono, 12)
-    font_mono_large  = ImageFont.truetype(font_path_roboto_mono, 28)
-    font_mono_label  = ImageFont.truetype(font_path, 11)
-    font_mono_icon   = ImageFont.truetype(font_path_dejavu_sans_mono, 14)
+    font_mono_tiny           = ImageFont.truetype(font_path, 9)
+    font_mono_small          = ImageFont.truetype(font_path, 10)
+    font_mono_medium         = ImageFont.truetype(font_path_ibm_plex_mono, 12)
+    font_mono_readout_medium = ImageFont.truetype(font_path_roboto_mono, 14)
+    font_mono_readout_large  = ImageFont.truetype(font_path_roboto_mono, 28)
+    font_mono_label          = ImageFont.truetype(font_path, 11)
 except Exception:
-    font_mono_small = font_mono_label = font_mono_data = font_mono_tiny = ImageFont.load_default()
+    font_mono_tiny = font_mono_small = font_mono_medium = font_mono_readout_medium = font_mono_readout_large = font_mono_label = ImageFont.load_default()
 
 def get_sun_events():
     try:
@@ -234,7 +234,7 @@ def update_screen():
 
     draw_r.text((right_edge // 2, start_y + 0 * row_gap), "Temperature", font=font_mono_label, fill=0, anchor="ma")
 
-    draw_b.text((-1, start_y + 0 * row_gap + 8), "00.0", font=font_mono_large, fill=0)
+    draw_b.text((-1, start_y + 0 * row_gap + 8), "00.0", font=font_mono_readout_large, fill=0)
     draw_b.text((71, start_y + 0 * row_gap + 12), "°C", font=font_mono_medium, fill=0)
     
     tri_x = right_edge - 8
@@ -247,7 +247,7 @@ def update_screen():
 
     draw_r.text((right_edge // 2, start_y + 1 * row_gap), "Humidity", font=font_mono_label, fill=0, anchor="ma")
 
-    draw_b.text((-1, start_y + 1 * row_gap + 8), "00.0", font=font_mono_large, fill=0)
+    draw_b.text((-1, start_y + 1 * row_gap + 8), "00.0", font=font_mono_readout_large, fill=0)
     draw_b.text((71, start_y + 1 * row_gap + 12), "%", font=font_mono_medium, fill=0)
     
     tri_x = right_edge - 8
@@ -260,7 +260,9 @@ def update_screen():
     
     draw_r.text((right_edge // 2, start_y + 2 * row_gap), "Air Quality", font=font_mono_label, fill=0, anchor="ma")
 
-    draw_b.text((-1, start_y + 2 * row_gap + 8), "00.0", font=font_mono_large, fill=0)
+    draw_b.text((-1, start_y + 2 * row_gap + 8), "VOC: 00.0", font=font_mono_readout_medium, fill=0)
+    draw_b.text((-1, start_y + 2 * row_gap + 20), "NOx: 00.0", font=font_mono_readout_medium, fill=0)
+
     draw_b.text((71, start_y + 2 * row_gap + 12), "%", font=font_mono_medium, fill=0)
     
     tri_x = right_edge - 8
