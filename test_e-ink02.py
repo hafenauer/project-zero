@@ -284,7 +284,7 @@ def update_screen():
     badge_gap = 2
     badges_y = start_y - badge_height - 6 # Leave gap between badges and bottom info
     
-    draw_b.line((0, badges_y - 2, right_edge, badges_y - 2), fill=0, width=1)
+    draw_b.line((0, badges_y - 4, right_edge, badges_y - 4), fill=0, width=1)
 
     draw_r = ImageDraw.Draw(img_r)
     
