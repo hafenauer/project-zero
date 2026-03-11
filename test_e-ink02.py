@@ -263,11 +263,10 @@ def update_screen():
     draw_b.text((-1, start_y + 2 * row_gap + 12), "VOC 100", font=font_mono_readout_medium, fill=0)
     draw_b.text((-1, start_y + 2 * row_gap + 24), "NOx 001", font=font_mono_readout_medium, fill=0)
 
-    # draw_b.text((71, start_y + 2 * row_gap + 12), "Good", font=font_mono_medium, fill=0)
-    # draw_b.text((71, start_y + 2 * row_gap + 24), "AQI 5", font=font_mono_medium, fill=0)
+    draw_b.text((60, start_y + 2 * row_gap + 12), "PM2.5 25", font=font_mono_medium, fill=0)
+    draw_b.text((60, start_y + 2 * row_gap + 24), "AQI 5", font=font_mono_medium, fill=0)
 
-    draw_b.text((62, start_y + 2 * row_gap + 12), "Good", font=font_mono_readout_medium, fill=0)
-    draw_b.text((62, start_y + 2 * row_gap + 24), "AQI 5", font=font_mono_readout_medium, fill=0)
+    draw_b.line((0, start_y + 2 * row_gap + 40, right_edge, start_y + 2 * row_gap + 40), fill=0, width=1)
 
     # Bottom info section
     row_gap = 9
