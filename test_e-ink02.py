@@ -225,10 +225,9 @@ def update_screen():
     draw_b.line((0, 36, right_edge, 36), fill=0, width=1)
 
     # Sensor data section
-    # to be implemented, left blank for now
 
     start_y = 38
-    row_gap = 42
+    row_gap = 41
 
     ### Temperature - inside and outside
 
