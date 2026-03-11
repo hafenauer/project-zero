@@ -190,7 +190,7 @@ def update_screen():
             # Or just draw on `img_r` with fill=255 for the text? No, PIL ImageDraw:
             draw_r.text((tx, ty), name, font=font_mono_tiny, fill=255)
 
-    divider_y = badges_y - 2
+    divider_y = start_y - 2
     draw_b.line((0, divider_y, right_edge, divider_y), fill=0, width=1)
 
     uptime_days = uptime.split('d')[0] if 'd' in uptime else "N/A"
