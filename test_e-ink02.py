@@ -34,6 +34,7 @@ font_path_fixedsys_excelsior = os.path.join(script_dir, "assets", "fonts", "FSEX
 font_path_atkinson_hyperlegible_next = os.path.join(script_dir, "assets", "fonts", "AtkinsonHyperlegibleNext-Regular.ttf")
 font_path_jetbrains_mono = os.path.join(script_dir, "assets", "fonts", "JetBrainsMono-Regular.ttf")
 font_path_roboto_mono = os.path.join(script_dir, "assets", "fonts", "RobotoMono-Regular.ttf")
+font_path_roboto_mono_semibold = os.path.join(script_dir, "assets", "fonts", "RobotoMono-SemiBold.ttf")
 font_path_ibm_plex_mono = os.path.join(script_dir, "assets", "fonts", "IBMPlexMono-Regular.ttf")
 font_path_dejavu_sans_mono = os.path.join(script_dir, "assets", "fonts", "DejaVuSansMono.ttf")
 font_path = font_path_dejavu_sans_mono
@@ -42,7 +43,7 @@ try:
     font_mono_tiny           = ImageFont.truetype(font_path, 9)
     font_mono_small          = ImageFont.truetype(font_path, 10)
     font_mono_medium         = ImageFont.truetype(font_path_ibm_plex_mono, 12)
-    font_mono_readout_medium = ImageFont.truetype(font_path_roboto_mono, 13)
+    font_mono_readout_medium = ImageFont.truetype(font_path_roboto_mono_semibold, 13)
     font_mono_readout_large  = ImageFont.truetype(font_path_roboto_mono, 28)
     font_mono_label          = ImageFont.truetype(font_path, 11)
 except Exception:
@@ -259,6 +260,7 @@ def update_screen():
     
     draw_r.text((-1, start_y + 2 * row_gap), "Air Quality", font=font_mono_label, fill=0)
 
+    draw_b.text((-1, start_y + 2 * row_gap + 12), "VOC 100", font=font_mono_readout_medium, fill=0)
     draw_b.text((-1, start_y + 2 * row_gap + 12), "VOC 100", font=font_mono_readout_medium, fill=0)
     draw_b.text((-1, start_y + 2 * row_gap + 24), "NOx 001", font=font_mono_readout_medium, fill=0)
 
