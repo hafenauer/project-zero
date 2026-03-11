@@ -42,7 +42,7 @@ try:
     font_mono_tiny           = ImageFont.truetype(font_path, 9)
     font_mono_small          = ImageFont.truetype(font_path, 10)
     font_mono_medium         = ImageFont.truetype(font_path_ibm_plex_mono, 12)
-    font_mono_readout_medium = ImageFont.truetype(font_path_roboto_mono, 14)
+    font_mono_readout_medium = ImageFont.truetype(font_path_roboto_mono, 13)
     font_mono_readout_large  = ImageFont.truetype(font_path_roboto_mono, 28)
     font_mono_label          = ImageFont.truetype(font_path, 11)
 except Exception:
@@ -260,8 +260,8 @@ def update_screen():
     
     draw_r.text((right_edge // 2, start_y + 2 * row_gap), "Air Quality", font=font_mono_label, fill=0, anchor="ma")
 
-    draw_b.text((-1, start_y + 2 * row_gap + 8), "VOC: 00.0", font=font_mono_readout_medium, fill=0)
-    draw_b.text((-1, start_y + 2 * row_gap + 20), "NOx: 00.0", font=font_mono_readout_medium, fill=0)
+    draw_b.text((-1, start_y + 2 * row_gap + 12), "VOC: 00.0", font=font_mono_readout_medium, fill=0)
+    draw_b.text((-1, start_y + 2 * row_gap + 24), "NOx: 00.0", font=font_mono_readout_medium, fill=0)
 
     draw_b.text((71, start_y + 2 * row_gap + 12), "%", font=font_mono_medium, fill=0)
     
