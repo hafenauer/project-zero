@@ -119,7 +119,7 @@ def update_screen():
     # Bottom-align this 3-line info block
     row_gap = 9
     rows = 3
-    bottom_padding = -1
+    bottom_padding = 0
 
     start_y = epd.height - bottom_padding - (rows * row_gap)
     divider_y = start_y - 1
