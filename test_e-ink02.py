@@ -130,8 +130,11 @@ def update_screen():
 
     # draw_b.line((0, 9 , right_edge, 9), fill=0, width=1)
 
-    # Message section
+    # Message and Sun Events section
     draw_b.rectangle((-1, 9, right_edge, 23), outline=0, width=1)
+    draw_b.text((-1, 25), "00:00", font=font_mono_tiny, fill=0) # Sunrise
+    draw_b.text((right_edge, 25), "00:00", font=font_mono_tiny, fill=0, anchor="ra") # Sunset
+
 
     # Sensor data section
     # to be implemented, left blank for now
