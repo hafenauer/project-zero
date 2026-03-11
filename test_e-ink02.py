@@ -150,7 +150,7 @@ def update_screen():
     badge_width = right_edge // len(badges)
     badge_height = 14
     badge_gap = 2
-    badges_y = start_y - badge_height - 6 # Leave gap between badges and bottom info
+    badges_y = start_y - badge_height # Leave gap between badges and bottom info
     
     draw_r = ImageDraw.Draw(img_r)
     
@@ -182,16 +182,10 @@ def update_screen():
         else:
             # Red border, red background
             draw_r.rounded_rectangle((bx0, by0, bx1, by1), radius=3, fill=0, outline=0, width=1)
-            # Text is "white" essentially in the red rectangle by not being drawn in black, wait, 
-            # to make text visible on red background we should draw white text on img_r.
-            # But the display is 3 colors. Background is white. Red is a separate buffer (img_r).
-            # If we fill area in img_r with '0' (black in buffer = red on screen), the pixel becomes red.
-            # If we want the text to be empty/white, we need to draw '255' (white) over the red?
-            # Or just draw on `img_r` with fill=255 for the text? No, PIL ImageDraw:
             draw_r.text((tx, ty), name, font=font_mono_tiny, fill=255)
 
     divider_y = start_y - 2
-    draw_b.line((0, divider_y, right_edge, divider_y), fill=0, width=1)
+    # draw_b.line((0, divider_y, right_edge, divider_y), fill=0, width=1)
 
     uptime_days = uptime.split('d')[0] if 'd' in uptime else "N/A"
 
