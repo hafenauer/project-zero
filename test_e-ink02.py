@@ -221,7 +221,7 @@ def update_screen():
     draw_b.text((-1, start_y + 0 * row_gap + 8), "00.0", font=font_mono_large, fill=0)
     draw_b.text((71, start_y + 0 * row_gap + 12), "°C", font=font_mono_medium, fill=0)
     draw_b.text((71, start_y + 0 * row_gap + 24), "00.0", font=font_mono_medium, fill=0)
-    draw_b.polygon([(60, start_y + 0 * row_gap + 12), (60, start_y + 0 * row_gap + 24), (65, start_y + 0 * row_gap + 18)], fill=0)
+    draw_b.polygon([(80, start_y + 0 * row_gap + 20), (91, start_y + 0 * row_gap + 20), (86, start_y + 0 * row_gap + 26)], fill=0)
 
     ### Humidity - inside and outside
 
