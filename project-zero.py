@@ -8,6 +8,7 @@ import os
 import sys
 import time
 import socket
+import threading
 import subprocess
 import board
 import requests
@@ -201,11 +202,9 @@ def on_disconnect(client, userdata, disconnect_flags, reason_code, properties):
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_disconnect = on_disconnect
-try:
-    mqtt_client.connect_async(MQTT_BROKER, MQTT_PORT, 60)
-except Exception as e:
-    print(f"Initial MQTT connect failed: {e}")
 mqtt_client.loop_start()
+
+mqtt_initialized = False
 
 # --- FETCH FUNCTIONS ---
 def get_owm_weather():
@@ -262,9 +261,13 @@ def get_sys_info():
         ip, uptime = "No Network", "N/A"
 
     try:
-        cmd_wifi = "awk 'NR==3 {print $3}' /proc/net/wireless"
-        sig = subprocess.check_output(cmd_wifi, shell=True).decode('utf-8').strip()
-        signal = f"{int(float(sig) * 100 / 70)}" if sig else "0"
+        with open('/proc/net/wireless', 'r') as f:
+            lines = f.readlines()
+            if len(lines) >= 3:
+                sig = lines[2].split()[2].replace('.', '')
+                signal = f"{int(float(sig) * 100 / 70)}"
+            else:
+                signal = "N/A"
     except Exception: 
         signal = "N/A"
 
@@ -526,26 +529,44 @@ while True:
                 print(f"SGP41 read failed: {e}")
 
         if tick % 180 == 0:
-            out_t, out_h, sunr, suns, sunrmins, sunsmins = get_owm_weather()
-            out_pm25, out_aqi = get_owm_pollution()
+            def background_update(current_t, current_h, current_voc, current_nox):
+                global last_t, last_h, out_t, out_h, sunr, suns, sunrmins, sunsmins, out_pm25, out_aqi
+                
+                try:
+                    out_t, out_h, sunr, suns, sunrmins, sunsmins = get_owm_weather()
+                    out_pm25, out_aqi = get_owm_pollution()
+                except Exception as e:
+                    print(f"OWM fetch error: {e}")
 
-            t_trend = "up" if last_t is not None and calibrated_t is not None and calibrated_t > last_t else "down" if last_t is not None and calibrated_t is not None and calibrated_t < last_t else None
-            h_trend = "up" if last_h is not None and calibrated_h is not None and calibrated_h > last_h else "down" if last_h is not None and calibrated_h is not None and calibrated_h < last_h else None
-            
-            if calibrated_t is not None: last_t = calibrated_t
-            if calibrated_h is not None: last_h = calibrated_h
-            
-            update_screen(
-                in_temp=calibrated_t, in_hum=calibrated_h, 
-                in_voc=voc_index, in_nox=nox_index,
-                out_temp=out_t, out_hum=out_h, 
-                out_pm2=out_pm25, out_aqi=out_aqi,
-                t_trend=t_trend, h_trend=h_trend,
-                sunrise_str=sunr, sunset_str=suns,
-                sunrise_mins=sunrmins, sunset_mins=sunsmins
-            )
+                t_trend = "up" if last_t is not None and current_t is not None and current_t > last_t else "down" if last_t is not None and current_t is not None and current_t < last_t else None
+                h_trend = "up" if last_h is not None and current_h is not None and current_h > last_h else "down" if last_h is not None and current_h is not None and current_h < last_h else None
+                
+                if current_t is not None: last_t = current_t
+                if current_h is not None: last_h = current_h
+                
+                try:
+                    update_screen(
+                        in_temp=current_t, in_hum=current_h, 
+                        in_voc=current_voc, in_nox=current_nox,
+                        out_temp=out_t, out_hum=out_h, 
+                        out_pm2=out_pm25, out_aqi=out_aqi,
+                        t_trend=t_trend, h_trend=h_trend,
+                        sunrise_str=sunr, sunset_str=suns,
+                        sunrise_mins=sunrmins, sunset_mins=sunsmins
+                    )
+                except Exception as e:
+                    print(f"Screen update error: {e}")
+                    
+            threading.Thread(target=background_update, args=(calibrated_t, calibrated_h, voc_index, nox_index)).start()
 
         if tick % 60 == 0:
+            if not mqtt_initialized:
+                try:
+                    mqtt_client.connect_async(MQTT_BROKER, MQTT_PORT, 60)
+                    mqtt_initialized = True
+                except Exception as e:
+                    pass
+                    
             if mqtt_connected:
                 try:
                     # Use current ISO 8601 formatting for timestamp, e.g. "2026-03-11T12:00:00Z"
@@ -570,14 +591,6 @@ while True:
                 except Exception as e:
                     print(f"Failed to publish MQTT payload: {e}")
 
-        tick += 1
-        if tick >= 180:
-            tick = 0
-            
-        time.sleep(1)
-
-    except (RuntimeError, OSError): 
-        time.sleep(2.0)
     except KeyboardInterrupt:
         print("\nExiting cleanly...")
         if mqtt_connected:
@@ -587,5 +600,7 @@ while True:
         sys.exit(0)
     except Exception as e:
         print(f"[{time.strftime('%H:%M:%S')}] Unexpected error in main loop: {e}")
-        time.sleep(10)
+    finally:
+        tick = (tick + 1) % 180
+        time.sleep(1)
 
