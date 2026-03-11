@@ -296,10 +296,13 @@ def update_screen():
     # Vertical orientation
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
 
-    # Save images to disk with timestamp
+    # Save combined image to disk with timestamp
     timestamp = time.strftime('%Y%m%d_%H%M%S')
-    img_b.save(os.path.join(script_dir, f"img_b_{timestamp}.png"))
-    img_r.save(os.path.join(script_dir, f"img_r_{timestamp}.png"))
+    img_combined = img_b.convert('RGB')
+    mask_r = img_r.convert('L').point(lambda x: 255 if x < 128 else 0)
+    img_combined.paste((255, 0, 0), (0, 0), mask_r)
+    img_combined = img_combined.rotate(180)
+    img_combined.save(os.path.join(script_dir, f"img_combined_{timestamp}.png"))
     
     # Send buffers to display
     epd.display(epd.getbuffer(img_b), epd.getbuffer(img_r))
