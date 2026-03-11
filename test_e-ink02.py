@@ -205,14 +205,24 @@ def update_screen():
     else:
         draw_b.text((suns_x, 25), sunset_str, font=font_mono_tiny, fill=0, anchor="ma")
 
+    draw_b.line((0, 30, right_edge, 30), fill=0, width=1)
+
     # Sensor data section
     # to be implemented, left blank for now
 
     ### Temperature - inside and outside
 
-    draw_r.text((5, 56), "Temperature", font=font_mono_label, fill=0)
-    draw_b.text((5, 71), f"00.0°C", font=font_mono_data, fill=0)
-    draw_b.text((80, 71), f"00.0°C", font=font_mono_tiny, fill=0)
+    draw_r.text((-1, 56), "Temperature", font=font_mono_label, fill=0)
+    thermo_icon_path = os.path.join(script_dir, "assets", "icons", "thermometer24.png")
+    try:
+        thermo_icon = Image.open(thermo_icon_path).convert("RGBA")
+        img_b.paste(thermo_icon, (5, 68), thermo_icon)
+    except Exception:
+        pass
+
+    temp_x = right_edge - 2
+    draw_b.text((temp_x, 71), "00.0°C", font=font_mono_data, fill=0, anchor="ra")
+    draw_b.text((temp_x, 92), "00.0°C", font=font_mono_tiny, fill=0, anchor="ra")
 
     ### Humidity - inside and outside
 
