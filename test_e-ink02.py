@@ -130,8 +130,8 @@ def update_screen():
 
     # draw_b.line((0, 9 , right_edge, 9), fill=0, width=1)
 
-    draw_b.rounded_rectangle((0, 9, right_edge, 23), radius=3, outline=0, width=1)
-    
+    draw_b.rounded_rectangle((0, 9, right_edge-1, 23), radius=3, outline=0, width=1)
+
 
     
     # Bottom info section
