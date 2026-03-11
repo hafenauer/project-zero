@@ -209,6 +209,10 @@ def update_screen():
 
     ### Temperature - inside and outside
 
+    draw_r.text((5, 56), "Temperature", font=font_mono_label, fill=0)
+    draw_b.text((5, 71), f"00.0°C", font=font_mono_data, fill=0)
+    draw_b.text((80, 71), f"00.0°C", font=font_mono_tiny, fill=0)
+
     ### Humidity - inside and outside
 
     ### Air Quality - VOC/NOx inside and outside score
