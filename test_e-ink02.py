@@ -84,6 +84,30 @@ def get_sys_info():
 
     return hostname, ip, signal, uptime, cpu_temp, load_avg
 
+def check_mqtt():
+    return False
+
+def check_wan():
+    try:
+        subprocess.check_output(["ping", "-c", "1", "-W", "2", "1.1.1.1"], stderr=subprocess.STDOUT)
+        return True
+    except Exception:
+        return False
+
+def check_lan():
+    try:
+        subprocess.check_output(["ping", "-c", "1", "-W", "2", "192.168.1.1"], stderr=subprocess.STDOUT)
+        return True
+    except Exception:
+        return False
+
+def check_dns():
+    try:
+        subprocess.check_output(["nslookup", "-timeout=2", "cloudflare.com", "192.168.1.22"], stderr=subprocess.STDOUT)
+        return True
+    except Exception:
+        return False
+
 def update_screen():
     hostname, ip_addr, signal, uptime, cpu_temp, load_avg = get_sys_info()
     epd.init()
@@ -93,16 +117,7 @@ def update_screen():
     img_b = Image.new('1', (epd.width, epd.height), 255)
     img_r = Image.new('1', (epd.width, epd.height), 255)
     
-    # avatar_path = os.path.join(script_dir, "assets", "images", "avatar16.gif")
-    
-    # try:
-    #     avatar = Image.open(avatar_path)
-    #     img_b.paste(avatar, (2, 3))
-    # except Exception as e:
-    #     print(f"Error loading avatar: {e}")
-
     draw_b = ImageDraw.Draw(img_b)
-    # draw_b.rectangle((0, 0, 21, 21), outline=0)
 
     right_edge = epd.width
 
@@ -116,14 +131,59 @@ def update_screen():
 
 
     
-    # Bottom-align this 3-line info block
+    # Bottom info section
     row_gap = 9
     rows = 3
     bottom_padding = 0
 
     start_y = epd.height - bottom_padding - (rows * row_gap)
-    divider_y = start_y - 1
 
+
+    # --- Badges Section ---
+    badges = [
+        ("WAN", check_wan()),
+        ("LAN", check_lan()),
+        ("DNS", check_dns()),
+        ("MQTT", check_mqtt())
+    ]
+    
+    badge_width = right_edge // len(badges)
+    badge_height = 14
+    badge_gap = 2
+    badges_y = start_y - badge_height - 6 # Leave gap between badges and bottom info
+    
+    draw_r = ImageDraw.Draw(img_r)
+    
+    for i, (name, is_ok) in enumerate(badges):
+        bx0 = i * badge_width + 1
+        by0 = badges_y
+        bx1 = bx0 + badge_width - badge_gap
+        by1 = by0 + badge_height
+        
+        # Determine center for text
+        text_bbox = draw_b.textbbox((0, 0), name, font=font_mono_tiny)
+        text_w = text_bbox[2] - text_bbox[0]
+        text_h = text_bbox[3] - text_bbox[1]
+        
+        tx = bx0 + (badge_width - badge_gap - text_w) / 2
+        ty = by0 + (badge_height - text_h) / 2 - 1
+        
+        if is_ok:
+            # Black border, empty background
+            draw_b.rounded_rectangle((bx0, by0, bx1, by1), radius=3, outline=0, width=1)
+            draw_b.text((tx, ty), name, font=font_mono_tiny, fill=0)
+        else:
+            # Red border, red background
+            draw_r.rounded_rectangle((bx0, by0, bx1, by1), radius=3, fill=0, outline=0, width=1)
+            # Text is "white" essentially in the red rectangle by not being drawn in black, wait, 
+            # to make text visible on red background we should draw white text on img_r.
+            # But the display is 3 colors. Background is white. Red is a separate buffer (img_r).
+            # If we fill area in img_r with '0' (black in buffer = red on screen), the pixel becomes red.
+            # If we want the text to be empty/white, we need to draw '255' (white) over the red?
+            # Or just draw on `img_r` with fill=255 for the text? No, PIL ImageDraw:
+            draw_r.text((tx, ty), name, font=font_mono_tiny, fill=255)
+
+    divider_y = badges_y - 2
     draw_b.line((0, divider_y, right_edge, divider_y), fill=0, width=1)
 
     uptime_days = uptime.split('d')[0] if 'd' in uptime else "N/A"
