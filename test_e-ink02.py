@@ -127,6 +127,22 @@ def check_dns():
     except Exception:
         return False
 
+def draw_isosceles_triangle(draw, x, y, width, height, direction='down', fill=0):
+    """
+    Draw an isosceles triangle.
+    (x, y) acts as the center coordinate of the triangle's base.
+    """
+    # Half-width for calculating base points
+    hw = width / 2.0
+    
+    if direction == 'down':
+        # Base is at y. Tip is pointing down (y + height)
+        draw.polygon([(x - hw, y), (x + hw, y), (x, y + height)], fill=fill)
+    else: # 'up'
+        # Base is at y. Tip is pointing up (y - height)
+        draw.polygon([(x - hw, y), (x + hw, y), (x, y - height)], fill=fill)
+
+
 def update_screen():
     hostname, ip_addr, signal, uptime, cpu_temp, load_avg = get_sys_info()
     sunrise_str, sunset_str, sunrise_mins, sunset_mins = get_sun_events()
@@ -156,8 +172,8 @@ def update_screen():
     current_minutes = now.tm_hour * 60 + now.tm_min
     cur_x = int((current_minutes / total_minutes) * right_edge)
     
-    # Draw small triangle pointing down to the timeline (Shifted up: y=11 to y=14)
-    draw_b.polygon([(cur_x - 3, 11), (cur_x + 3, 11), (cur_x, 14)], fill=0)
+    # Draw small triangle pointing down to the timeline (Shifted up: base y=11, height=3 => tip y=14)
+    draw_isosceles_triangle(draw_b, x=cur_x, y=11, width=6, height=3, direction='down', fill=0)
     
     # Draw sun event visualization (barcode style)
     # Tighter spacing: lines are 8px tall (y=16 to y=23), exactly 1px gap
@@ -224,7 +240,7 @@ def update_screen():
     # Isosceles triangle pointing down
     tri_x = right_edge - 8
     tri_y = start_y + 0 * row_gap + 16
-    draw_b.polygon([(tri_x - 5, tri_y), (tri_x + 5, tri_y), (tri_x, tri_y + 8)], fill=0)
+    draw_isosceles_triangle(draw_b, x=tri_x, y=tri_y, width=10, height=8, direction='down', fill=0)
     
     draw_b.text((71, start_y + 0 * row_gap + 24), "00.0", font=font_mono_medium, fill=0)
 
