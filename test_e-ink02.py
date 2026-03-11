@@ -271,8 +271,6 @@ def update_screen():
 
     start_y = epd.height - (rows * row_gap)
 
-    draw_b.line((0, start_y - 2, right_edge, start_y - 2), fill=0, width=1)
-
     # --- Badges Section ---
     badges = [
         ("WAN", check_wan()),
@@ -286,6 +284,8 @@ def update_screen():
     badge_gap = 2
     badges_y = start_y - badge_height - 6 # Leave gap between badges and bottom info
     
+    draw_b.line((0, badges_y - 2, right_edge, badges_y - 2), fill=0, width=1)
+
     draw_r = ImageDraw.Draw(img_r)
     
     for i, (name, is_ok) in enumerate(badges):
