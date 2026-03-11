@@ -41,8 +41,8 @@ font_path_2 = font_path_fixedsys_excelsior
 try:
     font_mono_tiny   = ImageFont.truetype(font_path, 9)
     font_mono_small  = ImageFont.truetype(font_path, 10)
-    font_mono_medium = ImageFont.truetype(font_path_fixedsys_excelsior, 14)
-    font_mono_large  = ImageFont.truetype(font_path_fixedsys_excelsior, 28)
+    font_mono_medium = ImageFont.truetype(font_path_atkinson_hyperlegible_next, 14)
+    font_mono_large  = ImageFont.truetype(font_path_atkinson_hyperlegible_next, 28)
     font_mono_label  = ImageFont.truetype(font_path, 11)
     font_mono_icon   = ImageFont.truetype(font_path, 23)
 except Exception:
