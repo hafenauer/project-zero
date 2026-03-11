@@ -130,9 +130,17 @@ def update_screen():
 
     # draw_b.line((0, 9 , right_edge, 9), fill=0, width=1)
 
-    draw_b.rounded_rectangle((0, 9, right_edge-1, 23), radius=3, outline=0, width=1)
+    # Message section
+    draw_b.rectangle((-1, 9, right_edge, 23), radius=3, outline=0, width=1)
 
+    # Sensor data section
+    # to be implemented, left blank for now
 
+    ### Temperature
+
+    ### Humidity
+
+    ### Air Quality
     
     # Bottom info section
     row_gap = 9
@@ -153,7 +161,7 @@ def update_screen():
     badge_width = right_edge // len(badges)
     badge_height = 14
     badge_gap = 2
-    badges_y = start_y - badge_height - 1 # Leave gap between badges and bottom info
+    badges_y = start_y - badge_height - 6 # Leave gap between badges and bottom info
     
     draw_r = ImageDraw.Draw(img_r)
     
@@ -188,7 +196,7 @@ def update_screen():
             draw_r.text((tx, ty), name, font=font_mono_tiny, fill=255)
 
     divider_y = start_y - 2
-    # draw_b.line((0, divider_y, right_edge, divider_y), fill=0, width=1)
+    draw_b.line((0, divider_y, right_edge, divider_y), fill=0, width=1)
 
     uptime_days = uptime.split('d')[0] if 'd' in uptime else "N/A"
 
