@@ -103,9 +103,7 @@ def check_lan():
 
 def check_dns():
     try:
-        # Use dig for reliable, easily parsable DNS resolution check
         output = subprocess.check_output(["dig", "@192.168.1.22", "cloudflare.com", "+short"], stderr=subprocess.STDOUT, timeout=3)
-        # If dig returns IP addresses (output is not empty), it's working
         return len(output.strip()) > 0
     except Exception:
         return False
@@ -157,9 +155,15 @@ def update_screen():
     draw_r = ImageDraw.Draw(img_r)
     
     for i, (name, is_ok) in enumerate(badges):
-        bx0 = i * badge_width + 1
+        bx0 = i * badge_width
         by0 = badges_y
-        bx1 = bx0 + badge_width - badge_gap
+        
+        # Last badge extends to right edge, others are standard width minus gap
+        if i == len(badges) - 1:
+            bx1 = right_edge - 1
+        else:
+            bx1 = bx0 + badge_width - badge_gap
+            
         by1 = by0 + badge_height
         
         # Determine center for text
@@ -167,7 +171,8 @@ def update_screen():
         text_w = text_bbox[2] - text_bbox[0]
         text_h = text_bbox[3] - text_bbox[1]
         
-        tx = bx0 + (badge_width - badge_gap - text_w) / 2
+        current_badge_width = bx1 - bx0
+        tx = bx0 + (current_badge_width - text_w) / 2
         ty = by0 + (badge_height - text_h) / 2 - 1
         
         if is_ok:
