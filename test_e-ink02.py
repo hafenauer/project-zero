@@ -137,6 +137,7 @@ def update_screen():
     img_r = Image.new('1', (epd.width, epd.height), 255)
     
     draw_b = ImageDraw.Draw(img_b)
+    draw_r = ImageDraw.Draw(img_r)
 
     right_edge = epd.width
 
