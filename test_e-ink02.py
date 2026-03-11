@@ -141,7 +141,7 @@ def draw_isosceles_triangle(draw, x, y, width, height, direction='down', fill=0)
         draw.polygon([(x - hw, y), (x + hw, y), (x, y + height)], fill=fill)
     else: # 'up'
         # Base is at y + height. Tip is pointing up (y)
-        y = y + 1 # Shift up by 1px to prevent touching the baseline
+        y = y - 1 # Shift up by 1px to prevent touching the baseline
         draw.polygon([(x - hw, y + height), (x + hw, y + height), (x, y)], fill=fill)
 
 
