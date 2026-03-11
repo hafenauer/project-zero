@@ -11,8 +11,8 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Pull latest code and execute
+      - name: Pull latest code and restart service
         run: |
           cd ~/project-zero
           git pull
-          python3 test_e-ink02.py
+          sudo systemctl restart project-zero.service
