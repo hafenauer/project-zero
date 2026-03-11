@@ -146,18 +146,24 @@ def update_screen():
     time_str = time.strftime('%H:%M')
     draw_b.text((right_edge,-2), time_str, font=font_mono_tiny, fill=0, anchor="ra")
 
-    # draw_b.line((0, 9 , right_edge, 9), fill=0, width=1)
-
     # Message and Sun Events section
-    draw_b.rectangle((-1, 9, right_edge, 23), outline=0, width=1)
+    total_minutes = 1440
+    
+    # Current time indicator
+    now = time.localtime()
+    current_minutes = now.tm_hour * 60 + now.tm_min
+    cur_x = int((current_minutes / total_minutes) * right_edge)
+    
+    # Draw small triangle pointing down to the timeline (y=15 to y=19)
+    # Triangle tip at (cur_x, 19), base at y=15
+    draw_b.polygon([(cur_x - 3, 15), (cur_x + 3, 15), (cur_x, 19)], fill=0)
     
     # Draw sun event visualization (barcode style)
-    # The x-axis represents 1440 minutes (24 hours) from 0 to right_edge
-    total_minutes = 1440
-    step = 4 # spacing between lines
-    for x in range(1, right_edge, step):
+    # Tighter spacing: lines are 10px tall (y=21 to y=30), exactly 1px gap
+    x_cursor = 0
+    while x_cursor < right_edge:
         # Calculate the equivalent time minute for this x coordinate
-        current_minute = (x / right_edge) * total_minutes
+        current_minute = (x_cursor / right_edge) * total_minutes
         
         # Determine day vs night thicker/thinner lines
         if sunrise_mins <= current_minute <= sunset_mins:
@@ -165,11 +171,23 @@ def update_screen():
         else:
             line_width = 1
             
-        draw_b.line((x, 10, x, 22), fill=0, width=line_width)
+        # Draw the line
+        # If line_width is 2, it occupies x_cursor and x_cursor+1
+        # To avoid drawing off-screen, check bounds implicitly
+        if line_width == 1:
+            draw_b.line((x_cursor, 21, x_cursor, 30), fill=0, width=1)
+        else:
+            draw_b.rectangle((x_cursor, 21, x_cursor + 1, 30), fill=0, outline=0)
+            
+        x_cursor += line_width + 1 # Advance past the line and leave a 1px gap
 
-    draw_b.text((-1, 25), sunrise_str, font=font_mono_tiny, fill=0) # Sunrise
-    draw_b.text((right_edge, 25), sunset_str, font=font_mono_tiny, fill=0, anchor="ra") # Sunset
+    # Determine exact x positions for the sunrise and sunset labels
+    sunr_x = int((sunrise_mins / total_minutes) * right_edge)
+    suns_x = int((sunset_mins / total_minutes) * right_edge)
 
+    # Shift labels dynamically below the timeline (which ends at y=30)
+    draw_b.text((sunr_x, 32), sunrise_str, font=font_mono_tiny, fill=0, anchor="ma")
+    draw_b.text((suns_x, 32), sunset_str, font=font_mono_tiny, fill=0, anchor="ma")
 
     # Sensor data section
     # to be implemented, left blank for now
