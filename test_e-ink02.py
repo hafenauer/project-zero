@@ -47,14 +47,31 @@ try:
 except Exception:
     font_mono_small = font_mono_label = font_mono_data = font_mono_tiny = ImageFont.load_default()
 
-def get_weather():
+def get_sun_events():
     try:
-        url = f"https://api.open-meteo.com/v1/forecast?latitude={LAT}&longitude={LON}&current=temperature_2m,relative_humidity_2m"
+        url = f"https://api.openweathermap.org/data/2.5/weather?lat={LAT}&lon={LON}&appid={OWM_API_KEY}"
         res = requests.get(url, timeout=10).json()
-        curr = res['current']
-        return curr['temperature_2m'], curr['relative_humidity_2m']
-    except Exception: 
-        return None, None
+        sys_data = res.get('sys', {})
+        
+        sunrise_ts = sys_data.get('sunrise')
+        sunset_ts = sys_data.get('sunset')
+        
+        # Calculate time structures to extract HH:MM and minutes from midnight
+        if sunrise_ts and sunset_ts:
+            sr_struct = time.localtime(sunrise_ts)
+            ss_struct = time.localtime(sunset_ts)
+            
+            sunrise_str = time.strftime('%H:%M', sr_struct)
+            sunset_str = time.strftime('%H:%M', ss_struct)
+            
+            sunrise_mins = sr_struct.tm_hour * 60 + sr_struct.tm_min
+            sunset_mins = ss_struct.tm_hour * 60 + ss_struct.tm_min
+            
+            return sunrise_str, sunset_str, sunrise_mins, sunset_mins
+    except Exception:
+        pass
+    
+    return "00:00", "00:00", 360, 1080 # Fallback to 6AM and 6PM
 
 def get_sys_info():
     hostname = socket.gethostname()
@@ -111,6 +128,7 @@ def check_dns():
 
 def update_screen():
     hostname, ip_addr, signal, uptime, cpu_temp, load_avg = get_sys_info()
+    sunrise_str, sunset_str, sunrise_mins, sunset_mins = get_sun_events()
     epd.init()
     
     # Initialize vertical canvases (width, height)
@@ -132,8 +150,25 @@ def update_screen():
 
     # Message and Sun Events section
     draw_b.rectangle((-1, 9, right_edge, 23), outline=0, width=1)
-    draw_b.text((-1, 25), "00:00", font=font_mono_tiny, fill=0) # Sunrise
-    draw_b.text((right_edge, 25), "00:00", font=font_mono_tiny, fill=0, anchor="ra") # Sunset
+    
+    # Draw sun event visualization (barcode style)
+    # The x-axis represents 1440 minutes (24 hours) from 0 to right_edge
+    total_minutes = 1440
+    step = 4 # spacing between lines
+    for x in range(1, right_edge, step):
+        # Calculate the equivalent time minute for this x coordinate
+        current_minute = (x / right_edge) * total_minutes
+        
+        # Determine day vs night thicker/thinner lines
+        if sunrise_mins <= current_minute <= sunset_mins:
+            line_width = 2
+        else:
+            line_width = 1
+            
+        draw_b.line((x, 10, x, 22), fill=0, width=line_width)
+
+    draw_b.text((-1, 25), sunrise_str, font=font_mono_tiny, fill=0) # Sunrise
+    draw_b.text((right_edge, 25), sunset_str, font=font_mono_tiny, fill=0, anchor="ra") # Sunset
 
 
     # Sensor data section
