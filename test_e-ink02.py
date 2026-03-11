@@ -150,7 +150,7 @@ def update_screen():
     badge_width = right_edge // len(badges)
     badge_height = 14
     badge_gap = 2
-    badges_y = start_y - badge_height # Leave gap between badges and bottom info
+    badges_y = start_y - badge_height - 1 # Leave gap between badges and bottom info
     
     draw_r = ImageDraw.Draw(img_r)
     
