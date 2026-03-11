@@ -41,8 +41,9 @@ font_path_2 = font_path_fixedsys_excelsior
 try:
     font_mono_tiny   = ImageFont.truetype(font_path, 9)
     font_mono_small  = ImageFont.truetype(font_path, 10)
+    font_mono_medium = ImageFont.truetype(font_path, 14)
+    font_mono_large  = ImageFont.truetype(font_path, 32)
     font_mono_label  = ImageFont.truetype(font_path, 12)
-    font_mono_data   = ImageFont.truetype(font_path, 22)
     font_mono_icon   = ImageFont.truetype(font_path, 23)
 except Exception:
     font_mono_small = font_mono_label = font_mono_data = font_mono_tiny = ImageFont.load_default()
@@ -217,9 +218,9 @@ def update_screen():
 
     draw_r.text((-1, start_y), "Temperature", font=font_mono_label, fill=0)
 
-    draw_b.text((-1, start_y + 0 * row_gap + 14), "00.0", font=font_mono_data, fill=0)
-    draw_b.text((right_edge, start_y + 0 * row_gap + 15), "°C", font=font_mono_tiny, fill=0, anchor="ra")
-    draw_b.text((right_edge, start_y + 0 * row_gap + 32), "00.0", font=font_mono_tiny, fill=0, anchor="ra")
+    draw_b.text((-1, start_y + 0 * row_gap + 14), "00.0", font=font_mono_large, fill=0)
+    draw_b.text((right_edge, start_y + 0 * row_gap + 14), "°C", font=font_mono_medium, fill=0, anchor="ra")
+    draw_b.text((right_edge, start_y + 0 * row_gap + 30), "00.0", font=font_mono_medium, fill=0, anchor="ra")
 
     ### Humidity - inside and outside
 
