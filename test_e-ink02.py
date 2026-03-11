@@ -265,14 +265,13 @@ def update_screen():
     draw_b.text((65, start_y + 2 * row_gap + 12), "PM 25", font=font_mono_medium, fill=0)
     draw_b.text((65, start_y + 2 * row_gap + 24), "AQI 5", font=font_mono_medium, fill=0)
 
-    draw_b.line((0, start_y + 2 * row_gap + 39, right_edge, start_y + 2 * row_gap + 39), fill=0, width=1)
-
     # Bottom info section
     row_gap = 9
     rows = 3
 
     start_y = epd.height - (rows * row_gap)
 
+    draw_b.line((0, start_y - 2, right_edge, start_y - 2), fill=0, width=1)
 
     # --- Badges Section ---
     badges = [
