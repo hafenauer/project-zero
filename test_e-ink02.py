@@ -154,12 +154,11 @@ def update_screen():
     current_minutes = now.tm_hour * 60 + now.tm_min
     cur_x = int((current_minutes / total_minutes) * right_edge)
     
-    # Draw small triangle pointing down to the timeline (y=15 to y=19)
-    # Triangle tip at (cur_x, 19), base at y=15
-    draw_b.polygon([(cur_x - 3, 15), (cur_x + 3, 15), (cur_x, 19)], fill=0)
+    # Draw small triangle pointing down to the timeline (Shifted up: y=11 to y=14)
+    draw_b.polygon([(cur_x - 3, 11), (cur_x + 3, 11), (cur_x, 14)], fill=0)
     
     # Draw sun event visualization (barcode style)
-    # Tighter spacing: lines are 10px tall (y=21 to y=30), exactly 1px gap
+    # Tighter spacing: lines are 8px tall (y=16 to y=23), exactly 1px gap
     x_cursor = 0
     while x_cursor < right_edge:
         # Calculate the equivalent time minute for this x coordinate
@@ -172,12 +171,10 @@ def update_screen():
             line_width = 1
             
         # Draw the line
-        # If line_width is 2, it occupies x_cursor and x_cursor+1
-        # To avoid drawing off-screen, check bounds implicitly
         if line_width == 1:
-            draw_b.line((x_cursor, 21, x_cursor, 30), fill=0, width=1)
+            draw_b.line((x_cursor, 16, x_cursor, 23), fill=0, width=1)
         else:
-            draw_b.rectangle((x_cursor, 21, x_cursor + 1, 30), fill=0, outline=0)
+            draw_b.rectangle((x_cursor, 16, x_cursor + 1, 23), fill=0, outline=0)
             
         x_cursor += line_width + 1 # Advance past the line and leave a 1px gap
 
@@ -185,9 +182,27 @@ def update_screen():
     sunr_x = int((sunrise_mins / total_minutes) * right_edge)
     suns_x = int((sunset_mins / total_minutes) * right_edge)
 
-    # Shift labels dynamically below the timeline (which ends at y=30)
-    draw_b.text((sunr_x, 32), sunrise_str, font=font_mono_tiny, fill=0, anchor="ma")
-    draw_b.text((suns_x, 32), sunset_str, font=font_mono_tiny, fill=0, anchor="ma")
+    # Calculate text widths dynamically to safeguard against clipping off-screen edges
+    sunr_bbox = draw_b.textbbox((0, 0), sunrise_str, font=font_mono_tiny)
+    sunr_half_w = (sunr_bbox[2] - sunr_bbox[0]) / 2
+
+    suns_bbox = draw_b.textbbox((0, 0), sunset_str, font=font_mono_tiny)
+    suns_half_w = (suns_bbox[2] - suns_bbox[0]) / 2
+
+    # Draw sunrise label
+    if sunr_x - sunr_half_w < 0:
+        # Clamped to left edge
+        draw_b.text((0, 25), sunrise_str, font=font_mono_tiny, fill=0, anchor="la")
+    else:
+        # Centered properly mapped under the line event break
+        draw_b.text((sunr_x, 25), sunrise_str, font=font_mono_tiny, fill=0, anchor="ma")
+
+    # Draw sunset label 
+    if suns_x + suns_half_w > right_edge:
+        # Clamped strictly against the flush right edge
+        draw_b.text((right_edge - 1, 25), sunset_str, font=font_mono_tiny, fill=0, anchor="ra")
+    else:
+        draw_b.text((suns_x, 25), sunset_str, font=font_mono_tiny, fill=0, anchor="ma")
 
     # Sensor data section
     # to be implemented, left blank for now
