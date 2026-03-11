@@ -38,7 +38,7 @@ font_path_roboto_mono_semibold = os.path.join(script_dir, "assets", "fonts", "Ro
 font_path_ibm_plex_mono = os.path.join(script_dir, "assets", "fonts", "IBMPlexMono-Regular.ttf")
 font_path_dejavu_sans_mono = os.path.join(script_dir, "assets", "fonts", "DejaVuSansMono.ttf")
 font_path = font_path_dejavu_sans_mono
-font_path_2 = font_path_fixedsys_excelsior
+
 try:
     font_mono_tiny           = ImageFont.truetype(font_path, 9)
     font_mono_small          = ImageFont.truetype(font_path, 10)
@@ -141,6 +141,7 @@ def draw_isosceles_triangle(draw, x, y, width, height, direction='down', fill=0)
         draw.polygon([(x - hw, y), (x + hw, y), (x, y + height)], fill=fill)
     else: # 'up'
         # Base is at y + height. Tip is pointing up (y)
+        y = y + 1 # Shift up by 1px to prevent touching the baseline
         draw.polygon([(x - hw, y + height), (x + hw, y + height), (x, y)], fill=fill)
 
 
