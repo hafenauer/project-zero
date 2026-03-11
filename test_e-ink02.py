@@ -114,17 +114,28 @@ def update_screen():
 
     draw_b.line((0, 9 , right_edge, 9), fill=0, width=1)
 
-    draw_b.text((-1, 10), hostname, font=font_mono_tiny, fill=0)
+
+    
+    # Bottom-align this 3-line info block
+    row_gap = 9
+    rows = 3
+    bottom_padding = 2
+
+    start_y = epd.height - bottom_padding - (rows * row_gap)
+    divider_y = start_y - 1
+
+    draw_b.line((0, divider_y, right_edge, divider_y), fill=0, width=1)
+
     uptime_days = uptime.split('d')[0] if 'd' in uptime else "N/A"
-    draw_b.text((right_edge, 10), f"{uptime_days}d", font=font_mono_tiny, fill=0, anchor="ra")
 
-    draw_b.text((-1, 19), ip_addr, font=font_mono_tiny, fill=0)
-    draw_b.text((right_edge, 19), f"{signal}%", font=font_mono_tiny, fill=0, anchor="ra")
+    draw_b.text((-1, start_y + 0 * row_gap), hostname, font=font_mono_tiny, fill=0)
+    draw_b.text((right_edge, start_y + 0 * row_gap), f"{uptime_days}d", font=font_mono_tiny, fill=0, anchor="ra")
 
-    draw_b.text((-1, 28), load_avg, font=font_mono_tiny, fill=0)
-    draw_b.text((right_edge,28), f"{cpu_temp}C", font=font_mono_tiny, fill=0, anchor="ra")
+    draw_b.text((-1, start_y + 1 * row_gap), ip_addr, font=font_mono_tiny, fill=0)
+    draw_b.text((right_edge, start_y + 1 * row_gap), f"{signal}%", font=font_mono_tiny, fill=0, anchor="ra")
 
-    draw_b.line((0, 38 , right_edge, 38), fill=0, width=1)
+    draw_b.text((-1, start_y + 2 * row_gap), load_avg, font=font_mono_tiny, fill=0)
+    draw_b.text((right_edge, start_y + 2 * row_gap), f"{cpu_temp}°C", font=font_mono_tiny, fill=0, anchor="ra")
 
     # Vertical orientation
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
