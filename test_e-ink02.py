@@ -231,7 +231,7 @@ def update_screen():
 
     ### Temperature - inside and outside
 
-    draw_r.text((right_edge // 2, start_y + 0 * row_gap), "Temperature", font=font_mono_label, fill=0, anchor="ma")
+    draw_r.text((-1, start_y + 0 * row_gap), "Temperature", font=font_mono_label, fill=0)
 
     draw_b.text((-1, start_y + 0 * row_gap + 8), "00.0", font=font_mono_readout_large, fill=0)
     draw_b.text((71, start_y + 0 * row_gap + 12), "°C", font=font_mono_medium, fill=0)
@@ -244,7 +244,7 @@ def update_screen():
 
     ### Humidity - inside and outside
 
-    draw_r.text((right_edge // 2, start_y + 1 * row_gap), "Humidity", font=font_mono_label, fill=0, anchor="ma")
+    draw_r.text((-1, start_y + 1 * row_gap), "Humidity", font=font_mono_label, fill=0)
 
     draw_b.text((-1, start_y + 1 * row_gap + 8), "00.0", font=font_mono_readout_large, fill=0)
     draw_b.text((71, start_y + 1 * row_gap + 12), "%", font=font_mono_medium, fill=0)
@@ -255,9 +255,9 @@ def update_screen():
     
     draw_b.text((71, start_y + 1 * row_gap + 24), "00.0", font=font_mono_medium, fill=0)
 
-    ### Air Quality - VOC/NOx inside and outside score
+    ### Air Quality - VOC/NOx inside and PM2.5/AQI outside
     
-    draw_r.text((right_edge // 2, start_y + 2 * row_gap), "Air Quality", font=font_mono_label, fill=0, anchor="ma")
+    draw_r.text((-1, start_y + 2 * row_gap), "Air Quality", font=font_mono_label, fill=0)
 
     draw_b.text((-1, start_y + 2 * row_gap + 12), "VOC 100", font=font_mono_readout_medium, fill=0)
     draw_b.text((-1, start_y + 2 * row_gap + 24), "NOx 001", font=font_mono_readout_medium, fill=0)
