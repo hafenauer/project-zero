@@ -103,7 +103,10 @@ def check_lan():
 
 def check_dns():
     try:
-        subprocess.check_output(["nslookup", "-timeout=2", "cloudflare.com", "192.168.1.22"], stderr=subprocess.STDOUT)
+        # On Linux/Raspberry Pi, use the dig utility or nslookup depending on availability.
+        # However, ping with ping -c 1 is already standard, but nslookup arg syntax varies.
+        # "nslookup cloudflare.com 192.168.1.22" is more widely compatible.
+        subprocess.check_output(["nslookup", "cloudflare.com", "192.168.1.22"], stderr=subprocess.STDOUT, timeout=3)
         return True
     except Exception:
         return False
