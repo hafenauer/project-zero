@@ -232,14 +232,14 @@ def update_screen():
 
     ### Temperature - inside and outside
 
-    draw_r.text((-1, start_y), "Temperature", font=font_mono_label, fill=0)
+    draw_r.text((right_edge // 2, start_y), "Temperature", font=font_mono_label, fill=0, anchor="ma")
 
     draw_b.text((-1, start_y + 0 * row_gap + 8), "00.0", font=font_mono_large, fill=0)
     draw_b.text((71, start_y + 0 * row_gap + 12), "°C", font=font_mono_medium, fill=0)
     
     # Isosceles triangle pointing down
     tri_x = right_edge - 8
-    tri_y = start_y + 0 * row_gap + 16
+    tri_y = start_y + 0 * row_gap + 17
     draw_isosceles_triangle(draw_b, x=tri_x, y=tri_y, width=10, height=8, direction='down', fill=0)
     
     draw_b.text((71, start_y + 0 * row_gap + 24), "00.0", font=font_mono_medium, fill=0)
