@@ -103,19 +103,10 @@ def check_lan():
 
 def check_dns():
     try:
-        # Pure Python DNS query (A record for cloudflare.com) to bypass missing nslookup/dig
-        # Transaction ID (0x1234), Flags (0x0100 standard query), Questions (1)
-        query = b'\x12\x34\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00' \
-                b'\x0acloudflare\x03com\x00\x00\x01\x00\x01'
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.settimeout(3.0)
-        s.sendto(query, ('192.168.1.22', 53))
-        data, _ = s.recvfrom(1024)
-        s.close()
-        # If response has our Transaction ID and Answer RRs > 0
-        if len(data) > 8 and data[:2] == b'\x12\x34' and data[6:8] != b'\x00\x00':
-            return True
-        return False
+        # Use dig for reliable, easily parsable DNS resolution check
+        output = subprocess.check_output(["dig", "@192.168.1.22", "cloudflare.com", "+short"], stderr=subprocess.STDOUT, timeout=3)
+        # If dig returns IP addresses (output is not empty), it's working
+        return len(output.strip()) > 0
     except Exception:
         return False
 
