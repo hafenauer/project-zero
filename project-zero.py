@@ -18,18 +18,23 @@ from PIL import Image, ImageDraw, ImageFont
 
 import adafruit_sht4x
 from adafruit_sgp41 import Adafruit_SGP41
+from sensirion_gas_index_algorithm.voc_algorithm import VocAlgorithm
+from sensirion_gas_index_algorithm.nox_algorithm import NoxAlgorithm
 
 # --- CONFIGURATION ---
+
 OWM_API_KEY = "fc44781d319f91835d4a8ebecf86cfa2" # OpenWeatherMap API key
 LAT = "53.5019" # Latitude
 LON = "-1.2690" # Longitude
-
+GATEWAY_IP = "192.168.1.1" # Local network gateway
+DNS_IP = "192.168.1.22"    # Custom DNS server
 MQTT_BROKER = "192.168.1.27"
 MQTT_PORT = 1883
 MQTT_USER = "hass"
 MQTT_PASS = "s640pudupa"
 MQTT_TOPIC = "home/project-zero/climate"
 MQTT_STATUS_TOPIC = "home/project-zero/status"
+
 # ---------------------------
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -78,9 +83,13 @@ if i2c:
         print(f"SHT45 init failed: {e}")
 
 sgp = None
+voc_algorithm = None
+nox_algorithm = None
 if i2c:
     try:
         sgp = Adafruit_SGP41(i2c)
+        voc_algorithm = VocAlgorithm()
+        nox_algorithm = NoxAlgorithm()
     except Exception as e:
         print(f"SGP41 init failed: {e}")
 
@@ -130,8 +139,8 @@ def send_discovery_packet():
         "name": "VOC Index",
         "device_class": "volatile_organic_compounds",
         "state_class": "measurement",
-        "unit_of_measurement": "",
-        "value_template": "{{ value_json.voc_raw }}",
+        "unit_of_measurement": "Index",
+        "value_template": "{{ value_json.voc_index }}",
         "unique_id": "projectzero_voc_01"
     }
     
@@ -139,8 +148,8 @@ def send_discovery_packet():
         "name": "NOx Index",
         "device_class": "nitrogen_dioxide",
         "state_class": "measurement",
-        "unit_of_measurement": "",
-        "value_template": "{{ value_json.nox_raw }}",
+        "unit_of_measurement": "Index",
+        "value_template": "{{ value_json.nox_index }}",
         "unique_id": "projectzero_nox_01"
     }
     
@@ -236,7 +245,7 @@ def get_sys_info():
         cmd_uptime = "awk '{print int($1/86400)\"d \"int($1%86400/3600)\"h \"int(($1%3600)/60)\"m \"int($1%60)\"s\"}' /proc/uptime"
         uptime = subprocess.check_output(cmd_uptime, shell=True).decode('utf-8').strip()
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("192.168.1.1", 80))
+        s.connect((GATEWAY_IP, 80))
         ip = s.getsockname()[0]
         s.close()
     except Exception: 
@@ -272,14 +281,14 @@ def check_wan():
 
 def check_lan():
     try:
-        subprocess.check_output(["ping", "-c", "1", "-W", "2", "192.168.1.1"], stderr=subprocess.STDOUT)
+        subprocess.check_output(["ping", "-c", "1", "-W", "2", GATEWAY_IP], stderr=subprocess.STDOUT)
         return True
     except Exception:
         return False
 
 def check_dns():
     try:
-        output = subprocess.check_output(["dig", "@192.168.1.22", "cloudflare.com", "+short"], stderr=subprocess.STDOUT, timeout=3)
+        output = subprocess.check_output(["dig", f"@{DNS_IP}", "cloudflare.com", "+short"], stderr=subprocess.STDOUT, timeout=3)
         return len(output.strip()) > 0
     except Exception:
         return False
@@ -478,6 +487,7 @@ loop_counter = 0
 first_run = True
 
 last_t, last_h = None, None
+out_t, out_h = None, None
 
 while True:
     try:
@@ -509,13 +519,16 @@ while True:
         calibrated_t = round(t, 1) if t is not None else None
         calibrated_h = round(h, 1) if h is not None else None
         
-        raw_voc, raw_nox = None, None
-        if sgp is not None:
+        voc_index, nox_index = None, None
+        if sgp is not None and voc_algorithm is not None and nox_algorithm is not None:
             try:
                 if calibrated_t is not None and calibrated_h is not None:
                     raw_voc, raw_nox = sgp.measure_raw(temperature=calibrated_t, relative_humidity=calibrated_h)
                 else:
                     raw_voc, raw_nox = sgp.measure_raw()
+                
+                voc_index = voc_algorithm.process(raw_voc)
+                nox_index = nox_algorithm.process(raw_nox)
             except Exception as e:
                 print(f"SGP41 read failed: {e}")
 
@@ -531,7 +544,7 @@ while True:
             
             update_screen(
                 in_temp=calibrated_t, in_hum=calibrated_h, 
-                in_voc=raw_voc, in_nox=raw_nox,
+                in_voc=voc_index, in_nox=nox_index,
                 out_temp=out_t, out_hum=out_h, 
                 out_pm2=out_pm25, out_aqi=out_aqi,
                 t_trend=t_trend, h_trend=h_trend,
@@ -549,14 +562,11 @@ while True:
                 payload_dict = {}
                 if calibrated_t is not None: payload_dict["temperature"] = calibrated_t
                 if calibrated_h is not None: payload_dict["humidity"] = calibrated_h
-                if raw_voc is not None: payload_dict["voc_raw"] = raw_voc
-                if raw_nox is not None: payload_dict["nox_raw"] = raw_nox
+                if voc_index is not None: payload_dict["voc_index"] = voc_index
+                if nox_index is not None: payload_dict["nox_index"] = nox_index
                 
                 # Use the fetched outdoor metrics, initializing output vars explicitly
-                try: 
-                    # If variables not assigned yet, use ones from weather fetch
-                    _ = out_t
-                except NameError:
+                if out_t is None:
                     # In case mqtt push happens before weather is fetched on first boot iterations (not loop % 3 == 0)
                     out_t, out_h, _, _, _, _ = get_owm_weather()
                     
@@ -575,13 +585,14 @@ while True:
         loop_counter += 1
         time.sleep(60)
 
-    except RuntimeError: 
+    except (RuntimeError, OSError): 
         time.sleep(2.0)
     except KeyboardInterrupt:
         print("\nExiting cleanly...")
         if mqtt_connected:
             mqtt_client.publish(MQTT_STATUS_TOPIC, "offline", retain=True)
         mqtt_client.loop_stop()
+        epd.sleep()
         sys.exit(0)
     except Exception as e:
         print(f"[{time.strftime('%H:%M:%S')}] Unexpected error in main loop: {e}")
