@@ -201,6 +201,10 @@ def on_disconnect(client, userdata, disconnect_flags, reason_code, properties):
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_disconnect = on_disconnect
+try:
+    mqtt_client.connect_async(MQTT_BROKER, MQTT_PORT, 60)
+except Exception as e:
+    print(f"Initial MQTT connect failed: {e}")
 mqtt_client.loop_start()
 
 # --- FETCH FUNCTIONS ---
@@ -242,8 +246,14 @@ def get_owm_pollution():
 def get_sys_info():
     hostname = socket.gethostname()
     try:
-        cmd_uptime = "awk '{print int($1/86400)\"d \"int($1%86400/3600)\"h \"int(($1%3600)/60)\"m \"int($1%60)\"s\"}' /proc/uptime"
-        uptime = subprocess.check_output(cmd_uptime, shell=True).decode('utf-8').strip()
+        with open('/proc/uptime', 'r') as f:
+            uptime_seconds = float(f.readline().split()[0])
+        days = int(uptime_seconds / 86400)
+        hours = int((uptime_seconds % 86400) / 3600)
+        minutes = int((uptime_seconds % 3600) / 60)
+        seconds = int(uptime_seconds % 60)
+        uptime = f"{days}d {hours}h {minutes}m {seconds}s"
+        
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect((GATEWAY_IP, 80))
         ip = s.getsockname()[0]
@@ -483,32 +493,15 @@ def update_screen(in_temp, in_hum, in_voc, in_nox, out_temp, out_hum, out_pm2, o
 
 
 # --- MAIN LOOP ---
-loop_counter = 0
-first_run = True
+tick = 0
 
 last_t, last_h = None, None
 out_t, out_h = None, None
+sunr, suns, sunrmins, sunsmins = "00:00", "00:00", 360, 1080
+out_pm25, out_aqi = None, None
 
 while True:
     try:
-        if not mqtt_connected:
-            curr_time = time.time()
-            if first_run:
-                try:
-                    mqtt_client.connect_async(MQTT_BROKER, MQTT_PORT, 60)
-                    for _ in range(5):
-                        if mqtt_connected: break
-                        time.sleep(1)
-                except: pass
-                last_mqtt_retry = time.time()
-                first_run = False
-            elif curr_time - last_mqtt_retry >= 60:
-                try:
-                    mqtt_client.connect_async(MQTT_BROKER, MQTT_PORT, 60)
-                except Exception as e:
-                    print(f"MQTT async connect attempt failed: {e}")
-                last_mqtt_retry = curr_time
-
         t, h = None, None
         if sht is not None:
             try:
@@ -532,10 +525,10 @@ while True:
             except Exception as e:
                 print(f"SGP41 read failed: {e}")
 
-        if loop_counter % 3 == 0:
+        if tick % 180 == 0:
             out_t, out_h, sunr, suns, sunrmins, sunsmins = get_owm_weather()
             out_pm25, out_aqi = get_owm_pollution()
-            
+
             t_trend = "up" if last_t is not None and calibrated_t is not None and calibrated_t > last_t else "down" if last_t is not None and calibrated_t is not None and calibrated_t < last_t else None
             h_trend = "up" if last_h is not None and calibrated_h is not None and calibrated_h > last_h else "down" if last_h is not None and calibrated_h is not None and calibrated_h < last_h else None
             
@@ -551,39 +544,37 @@ while True:
                 sunrise_str=sunr, sunset_str=suns,
                 sunrise_mins=sunrmins, sunset_mins=sunsmins
             )
-            
-        if mqtt_connected:
-            try:
-                # Use current ISO 8601 formatting for timestamp, e.g. "2026-03-11T12:00:00Z"
-                # Using UTC timezone for compatibility with Home Assistant
-                current_time = time.time()
-                formatted_time_utc = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(current_time))
-                
-                payload_dict = {}
-                if calibrated_t is not None: payload_dict["temperature"] = calibrated_t
-                if calibrated_h is not None: payload_dict["humidity"] = calibrated_h
-                if voc_index is not None: payload_dict["voc_index"] = voc_index
-                if nox_index is not None: payload_dict["nox_index"] = nox_index
-                
-                # Use the fetched outdoor metrics, initializing output vars explicitly
-                if out_t is None:
-                    # In case mqtt push happens before weather is fetched on first boot iterations (not loop % 3 == 0)
-                    out_t, out_h, _, _, _, _ = get_owm_weather()
-                    
-                if out_t is not None: payload_dict["out_temp"] = out_t
-                if out_h is not None: payload_dict["out_hum"] = out_h
-                
-                # Add our timestamp
-                payload_dict["last_update"] = formatted_time_utc
-                
-                if payload_dict:
-                    payload = json.dumps(payload_dict)
-                    mqtt_client.publish(MQTT_TOPIC, payload)
-            except Exception as e:
-                print(f"Failed to publish MQTT payload: {e}")
 
-        loop_counter += 1
-        time.sleep(60)
+        if tick % 60 == 0:
+            if mqtt_connected:
+                try:
+                    # Use current ISO 8601 formatting for timestamp, e.g. "2026-03-11T12:00:00Z"
+                    current_time = time.time()
+                    formatted_time_utc = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(current_time))
+                    
+                    payload_dict = {}
+                    if calibrated_t is not None: payload_dict["temperature"] = calibrated_t
+                    if calibrated_h is not None: payload_dict["humidity"] = calibrated_h
+                    if voc_index is not None: payload_dict["voc_index"] = voc_index
+                    if nox_index is not None: payload_dict["nox_index"] = nox_index
+                    
+                    if out_t is not None: payload_dict["out_temp"] = out_t
+                    if out_h is not None: payload_dict["out_hum"] = out_h
+                    
+                    # Add our timestamp
+                    payload_dict["last_update"] = formatted_time_utc
+                    
+                    if payload_dict:
+                        payload = json.dumps(payload_dict)
+                        mqtt_client.publish(MQTT_TOPIC, payload)
+                except Exception as e:
+                    print(f"Failed to publish MQTT payload: {e}")
+
+        tick += 1
+        if tick >= 180:
+            tick = 0
+            
+        time.sleep(1)
 
     except (RuntimeError, OSError): 
         time.sleep(2.0)
