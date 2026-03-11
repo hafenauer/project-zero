@@ -260,8 +260,8 @@ def update_screen():
     
     draw_r.text((-1, start_y + 2 * row_gap), "Air Quality", font=font_mono_label, fill=0)
 
-    draw_b.text((-1, start_y + 2 * row_gap + 12), "VOC 100", font=font_mono_readout_medium, fill=0)
-    draw_b.text((-1, start_y + 2 * row_gap + 12), "VOC 100", font=font_mono_readout_medium, fill=0)
+    draw_b.text((-1, start_y + 2 * row_gap + 12), "VOC", font=font_mono_small, fill=0)
+    draw_b.text((-1, start_y + 2 * row_gap + 12), "    100", font=font_mono_readout_medium, fill=0)
     draw_b.text((-1, start_y + 2 * row_gap + 24), "NOx 001", font=font_mono_readout_medium, fill=0)
 
     draw_b.text((65, start_y + 2 * row_gap + 12), "PM 25", font=font_mono_medium, fill=0)
