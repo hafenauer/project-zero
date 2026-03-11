@@ -131,7 +131,7 @@ def update_screen():
     # draw_b.line((0, 9 , right_edge, 9), fill=0, width=1)
 
     # Message section
-    draw_b.rectangle((-1, 9, right_edge, 23), radius=3, outline=0, width=1)
+    draw_b.rectangle((-1, 9, right_edge, 23), outline=0, width=1)
 
     # Sensor data section
     # to be implemented, left blank for now
