@@ -228,7 +228,7 @@ def update_screen():
     # to be implemented, left blank for now
 
     start_y = 38
-    row_gap = 36
+    row_gap = 44
 
     ### Temperature - inside and outside
 
