@@ -64,9 +64,25 @@ except Exception:
     font_mono_tiny = font_mono_small = font_mono_medium = font_mono_readout_medium = font_mono_readout_large = font_mono_label = ImageFont.load_default()
 
 # --- SENSORS SETUP ---
-i2c = board.I2C()
-sht = adafruit_sht4x.SHT4x(i2c)
-sgp = Adafruit_SGP41(i2c)
+try:
+    i2c = board.I2C()
+except Exception as e:
+    print(f"I2C init failed: {e}")
+    i2c = None
+
+sht = None
+if i2c:
+    try:
+        sht = adafruit_sht4x.SHT4x(i2c)
+    except Exception as e:
+        print(f"SHT45 init failed: {e}")
+
+sgp = None
+if i2c:
+    try:
+        sgp = Adafruit_SGP41(i2c)
+    except Exception as e:
+        print(f"SGP41 init failed: {e}")
 
 # --- MQTT SETUP ---
 mqtt_connected = False
@@ -455,49 +471,62 @@ while True:
                     print(f"MQTT async connect attempt failed: {e}")
                 last_mqtt_retry = curr_time
 
-        t, h = sht.measurements
+        t, h = None, None
+        if sht is not None:
+            try:
+                t, h = sht.measurements
+            except Exception as e:
+                print(f"SHT45 read failed: {e}")
         
-        if t is not None and h is not None:
-            calibrated_t = round(t, 1)
-            calibrated_h = round(h, 1)
-            
-            raw_voc, raw_nox = sgp.measure_raw(temperature=calibrated_t, relative_humidity=calibrated_h)
+        calibrated_t = round(t, 1) if t is not None else None
+        calibrated_h = round(h, 1) if h is not None else None
+        
+        raw_voc, raw_nox = None, None
+        if sgp is not None:
+            try:
+                if calibrated_t is not None and calibrated_h is not None:
+                    raw_voc, raw_nox = sgp.measure_raw(temperature=calibrated_t, relative_humidity=calibrated_h)
+                else:
+                    raw_voc, raw_nox = sgp.measure_raw()
+            except Exception as e:
+                print(f"SGP41 read failed: {e}")
 
-            if mqtt_connected:
-                try:
-                    payload = json.dumps({
-                        "temperature": calibrated_t,
-                        "humidity": calibrated_h,
-                        "voc_raw": raw_voc,
-                        "nox_raw": raw_nox
-                    })
+        if mqtt_connected:
+            try:
+                payload_dict = {}
+                if calibrated_t is not None: payload_dict["temperature"] = calibrated_t
+                if calibrated_h is not None: payload_dict["humidity"] = calibrated_h
+                if raw_voc is not None: payload_dict["voc_raw"] = raw_voc
+                if raw_nox is not None: payload_dict["nox_raw"] = raw_nox
+                
+                if payload_dict:
+                    payload = json.dumps(payload_dict)
                     mqtt_client.publish(MQTT_TOPIC, payload)
-                except Exception as e:
-                    print(f"Failed to publish MQTT payload: {e}")
+            except Exception as e:
+                print(f"Failed to publish MQTT payload: {e}")
 
-            if loop_counter % 3 == 0:
-                out_t, out_h, sunr, suns, sunrmins, sunsmins = get_owm_weather()
-                out_pm25, out_aqi = get_owm_pollution()
-                
-                t_trend = "up" if last_t is not None and calibrated_t > last_t else "down" if last_t is not None and calibrated_t < last_t else None
-                h_trend = "up" if last_h is not None and calibrated_h > last_h else "down" if last_h is not None and calibrated_h < last_h else None
-                
-                last_t, last_h = calibrated_t, calibrated_h
-                
-                update_screen(
-                    in_temp=calibrated_t, in_hum=calibrated_h, 
-                    in_voc=raw_voc, in_nox=raw_nox,
-                    out_temp=out_t, out_hum=out_h, 
-                    out_pm2=out_pm25, out_aqi=out_aqi,
-                    t_trend=t_trend, h_trend=h_trend,
-                    sunrise_str=sunr, sunset_str=suns,
-                    sunrise_mins=sunrmins, sunset_mins=sunsmins
-                )
+        if loop_counter % 3 == 0:
+            out_t, out_h, sunr, suns, sunrmins, sunsmins = get_owm_weather()
+            out_pm25, out_aqi = get_owm_pollution()
+            
+            t_trend = "up" if last_t is not None and calibrated_t is not None and calibrated_t > last_t else "down" if last_t is not None and calibrated_t is not None and calibrated_t < last_t else None
+            h_trend = "up" if last_h is not None and calibrated_h is not None and calibrated_h > last_h else "down" if last_h is not None and calibrated_h is not None and calibrated_h < last_h else None
+            
+            if calibrated_t is not None: last_t = calibrated_t
+            if calibrated_h is not None: last_h = calibrated_h
+            
+            update_screen(
+                in_temp=calibrated_t, in_hum=calibrated_h, 
+                in_voc=raw_voc, in_nox=raw_nox,
+                out_temp=out_t, out_hum=out_h, 
+                out_pm2=out_pm25, out_aqi=out_aqi,
+                t_trend=t_trend, h_trend=h_trend,
+                sunrise_str=sunr, sunset_str=suns,
+                sunrise_mins=sunrmins, sunset_mins=sunsmins
+            )
 
-            loop_counter += 1
-            time.sleep(60)
-        else:
-            time.sleep(2.0)
+        loop_counter += 1
+        time.sleep(60)
 
     except RuntimeError: 
         time.sleep(2.0)
