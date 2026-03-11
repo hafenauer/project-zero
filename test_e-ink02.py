@@ -220,7 +220,12 @@ def update_screen():
 
     draw_b.text((-1, start_y + 0 * row_gap + 8), "00.0", font=font_mono_large, fill=0)
     draw_b.text((71, start_y + 0 * row_gap + 12), "°C", font=font_mono_medium, fill=0)
-    draw_b.text((right_edge - 3, start_y + 0 * row_gap + 12), "▼", font=font_mono_icon, fill=0, anchor="ra")
+    
+    # Isosceles triangle pointing down
+    tri_x = right_edge - 8
+    tri_y = start_y + 0 * row_gap + 16
+    draw_b.polygon([(tri_x - 5, tri_y), (tri_x + 5, tri_y), (tri_x, tri_y + 8)], fill=0)
+    
     draw_b.text((71, start_y + 0 * row_gap + 24), "00.0", font=font_mono_medium, fill=0)
 
     ### Humidity - inside and outside
