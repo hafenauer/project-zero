@@ -109,7 +109,7 @@ def send_discovery_packet():
     }
 
     temp_config = {**base_config,
-        "name": "Project Zero Temperature",
+        "name": "Temperature",
         "device_class": "temperature",
         "state_class": "measurement",
         "unit_of_measurement": "°C",
@@ -118,7 +118,7 @@ def send_discovery_packet():
     }
 
     hum_config = {**base_config,
-        "name": "Project Zero Humidity",
+        "name": "Humidity",
         "device_class": "humidity",
         "state_class": "measurement",
         "unit_of_measurement": "%",
@@ -127,7 +127,7 @@ def send_discovery_packet():
     }
     
     voc_config = {**base_config,
-        "name": "Project Zero VOC Index",
+        "name": "VOC Index",
         "device_class": "volatile_organic_compounds",
         "state_class": "measurement",
         "unit_of_measurement": "",
@@ -136,7 +136,7 @@ def send_discovery_packet():
     }
     
     nox_config = {**base_config,
-        "name": "Project Zero NOx Index",
+        "name": "NOx Index",
         "device_class": "nitrogen_dioxide",
         "state_class": "measurement",
         "unit_of_measurement": "",
