@@ -44,7 +44,7 @@ try:
     font_mono_medium = ImageFont.truetype(font_path_ibm_plex_mono, 12)
     font_mono_large  = ImageFont.truetype(font_path_roboto_mono, 28)
     font_mono_label  = ImageFont.truetype(font_path, 11)
-    font_mono_icon   = ImageFont.truetype(font_path_dejavu_sans_mono, 13)
+    font_mono_icon   = ImageFont.truetype(font_path_roboto_mono, 14)
 except Exception:
     font_mono_small = font_mono_label = font_mono_data = font_mono_tiny = ImageFont.load_default()
 
