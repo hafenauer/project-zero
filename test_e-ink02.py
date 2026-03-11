@@ -44,7 +44,7 @@ try:
     font_mono_medium = ImageFont.truetype(font_path_ibm_plex_mono, 12)
     font_mono_large  = ImageFont.truetype(font_path_roboto_mono, 28)
     font_mono_label  = ImageFont.truetype(font_path, 11)
-    font_mono_icon   = ImageFont.truetype(font_path, 23)
+    font_mono_icon   = ImageFont.truetype(font_path_jetbrains_mono, 12)
 except Exception:
     font_mono_small = font_mono_label = font_mono_data = font_mono_tiny = ImageFont.load_default()
 
@@ -219,7 +219,8 @@ def update_screen():
     draw_r.text((-1, start_y), "Temperature", font=font_mono_label, fill=0)
 
     draw_b.text((-1, start_y + 0 * row_gap + 8), "00.0", font=font_mono_large, fill=0)
-    draw_b.text((71, start_y + 0 * row_gap + 12), "°C ▼", font=font_mono_medium, fill=0)
+    draw_b.text((71, start_y + 0 * row_gap + 12), "°C", font=font_mono_medium, fill=0)
+    draw_b.text((right_edge, start_y + 0 * row_gap + 12), "▼", font=font_mono_icon, fill=0, anchor="ra")
     draw_b.text((71, start_y + 0 * row_gap + 24), "00.0", font=font_mono_medium, fill=0)
 
     ### Humidity - inside and outside
