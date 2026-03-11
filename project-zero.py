@@ -143,11 +143,39 @@ def send_discovery_packet():
         "value_template": "{{ value_json.nox_raw }}",
         "unique_id": "projectzero_nox_01"
     }
+    
+    out_temp_config = {**base_config,
+        "name": "Outside Temperature",
+        "device_class": "temperature",
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "value_template": "{{ value_json.out_temp }}",
+        "unique_id": "projectzero_out_temp_01"
+    }
+
+    out_hum_config = {**base_config,
+        "name": "Outside Humidity",
+        "device_class": "humidity",
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "value_template": "{{ value_json.out_hum }}",
+        "unique_id": "projectzero_out_hum_01"
+    }
+    
+    timestamp_config = {**base_config,
+        "name": "Last Update",
+        "device_class": "timestamp",
+        "value_template": "{{ value_json.last_update }}",
+        "unique_id": "projectzero_last_update_01"
+    }
 
     mqtt_client.publish("homeassistant/sensor/projectzero/temp/config", json.dumps(temp_config), retain=True)
     mqtt_client.publish("homeassistant/sensor/projectzero/hum/config", json.dumps(hum_config), retain=True)
     mqtt_client.publish("homeassistant/sensor/projectzero/voc/config", json.dumps(voc_config), retain=True)
     mqtt_client.publish("homeassistant/sensor/projectzero/nox/config", json.dumps(nox_config), retain=True)
+    mqtt_client.publish("homeassistant/sensor/projectzero/out_temp/config", json.dumps(out_temp_config), retain=True)
+    mqtt_client.publish("homeassistant/sensor/projectzero/out_hum/config", json.dumps(out_hum_config), retain=True)
+    mqtt_client.publish("homeassistant/sensor/projectzero/timestamp/config", json.dumps(timestamp_config), retain=True)
 
 def on_connect(client, userdata, flags, reason_code, properties):
     global mqtt_connected
@@ -491,20 +519,6 @@ while True:
             except Exception as e:
                 print(f"SGP41 read failed: {e}")
 
-        if mqtt_connected:
-            try:
-                payload_dict = {}
-                if calibrated_t is not None: payload_dict["temperature"] = calibrated_t
-                if calibrated_h is not None: payload_dict["humidity"] = calibrated_h
-                if raw_voc is not None: payload_dict["voc_raw"] = raw_voc
-                if raw_nox is not None: payload_dict["nox_raw"] = raw_nox
-                
-                if payload_dict:
-                    payload = json.dumps(payload_dict)
-                    mqtt_client.publish(MQTT_TOPIC, payload)
-            except Exception as e:
-                print(f"Failed to publish MQTT payload: {e}")
-
         if loop_counter % 3 == 0:
             out_t, out_h, sunr, suns, sunrmins, sunsmins = get_owm_weather()
             out_pm25, out_aqi = get_owm_pollution()
@@ -524,6 +538,39 @@ while True:
                 sunrise_str=sunr, sunset_str=suns,
                 sunrise_mins=sunrmins, sunset_mins=sunsmins
             )
+            
+        if mqtt_connected:
+            try:
+                # Use current ISO 8601 formatting for timestamp, e.g. "2026-03-11T12:00:00Z"
+                # Using UTC timezone for compatibility with Home Assistant
+                current_time = time.time()
+                formatted_time_utc = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(current_time))
+                
+                payload_dict = {}
+                if calibrated_t is not None: payload_dict["temperature"] = calibrated_t
+                if calibrated_h is not None: payload_dict["humidity"] = calibrated_h
+                if raw_voc is not None: payload_dict["voc_raw"] = raw_voc
+                if raw_nox is not None: payload_dict["nox_raw"] = raw_nox
+                
+                # Use the fetched outdoor metrics, initializing output vars explicitly
+                try: 
+                    # If variables not assigned yet, use ones from weather fetch
+                    _ = out_t
+                except NameError:
+                    # In case mqtt push happens before weather is fetched on first boot iterations (not loop % 3 == 0)
+                    out_t, out_h, _, _, _, _ = get_owm_weather()
+                    
+                if out_t is not None: payload_dict["out_temp"] = out_t
+                if out_h is not None: payload_dict["out_hum"] = out_h
+                
+                # Add our timestamp
+                payload_dict["last_update"] = formatted_time_utc
+                
+                if payload_dict:
+                    payload = json.dumps(payload_dict)
+                    mqtt_client.publish(MQTT_TOPIC, payload)
+            except Exception as e:
+                print(f"Failed to publish MQTT payload: {e}")
 
         loop_counter += 1
         time.sleep(60)
