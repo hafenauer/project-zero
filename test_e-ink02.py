@@ -44,17 +44,21 @@ try:
     font_mono_label  = ImageFont.truetype(font_path, 12)
     font_mono_data   = ImageFont.truetype(font_path, 22)
     font_mono_icon   = ImageFont.truetype(font_path, 23)
+    font_mono_xl     = ImageFont.truetype(font_path, 32) # Added large font
 except Exception:
-    font_mono_small = font_mono_label = font_mono_data = font_mono_tiny = ImageFont.load_default()
+    font_mono_xl = font_mono_small = font_mono_label = font_mono_data = font_mono_tiny = ImageFont.load_default()
 
-def get_sun_events():
+def get_weather_data():
     try:
-        url = f"https://api.openweathermap.org/data/2.5/weather?lat={LAT}&lon={LON}&appid={OWM_API_KEY}"
+        url = f"https://api.openweathermap.org/data/2.5/weather?lat={LAT}&lon={LON}&appid={OWM_API_KEY}&units=metric"
         res = requests.get(url, timeout=10).json()
         sys_data = res.get('sys', {})
+        main_data = res.get('main', {})
         
         sunrise_ts = sys_data.get('sunrise')
         sunset_ts = sys_data.get('sunset')
+        out_temp = main_data.get('temp', 0)
+        out_hum = main_data.get('humidity', 0)
         
         # Calculate time structures to extract HH:MM and minutes from midnight
         if sunrise_ts and sunset_ts:
@@ -67,11 +71,11 @@ def get_sun_events():
             sunrise_mins = sr_struct.tm_hour * 60 + sr_struct.tm_min
             sunset_mins = ss_struct.tm_hour * 60 + ss_struct.tm_min
             
-            return sunrise_str, sunset_str, sunrise_mins, sunset_mins
+            return sunrise_str, sunset_str, sunrise_mins, sunset_mins, out_temp, out_hum
     except Exception:
         pass
     
-    return "00:00", "00:00", 360, 1080 # Fallback to 6AM and 6PM
+    return "00:00", "00:00", 360, 1080, "N/A", "N/A" # Fallback to 6AM and 6PM
 
 def get_sys_info():
     hostname = socket.gethostname()
@@ -128,7 +132,7 @@ def check_dns():
 
 def update_screen():
     hostname, ip_addr, signal, uptime, cpu_temp, load_avg = get_sys_info()
-    sunrise_str, sunset_str, sunrise_mins, sunset_mins = get_sun_events()
+    sunrise_str, sunset_str, sunrise_mins, sunset_mins, out_temp, out_hum = get_weather_data()
     epd.init()
     
     # Initialize vertical canvases (width, height)
@@ -205,13 +209,40 @@ def update_screen():
         draw_b.text((suns_x, 25), sunset_str, font=font_mono_tiny, fill=0, anchor="ma")
 
     # Sensor data section
-    # to be implemented, left blank for now
+    in_temp = "22.5"
+    in_hum = "45"
+    in_trend = "up"
+    out_trend = "down"
 
-    ### Temperature
+    draw_r = ImageDraw.Draw(img_r)
 
-    ### Humidity
+    # --- INSIDE ---
+    # IN label (red)
+    draw_r.text((5, 36), "IN", font=font_mono_tiny, fill=0)
+    # Inside Temp (really big)
+    draw_b.text((20, 32), f"{in_temp}C", font=font_mono_xl, fill=0)
+    # Inside Trend Triangle (red)
+    if in_trend == "up":
+        draw_r.polygon([(90, 42), (98, 42), (94, 38)], fill=0)
+    else:
+        draw_r.polygon([(90, 38), (98, 38), (94, 42)], fill=0)
 
-    ### Air Quality
+    # --- OUTSIDE ---
+    # OUT label (red)
+    draw_r.text((115, 36), "OUT", font=font_mono_tiny, fill=0)
+    # Outside Temp (relatively small)
+    if out_temp != "N/A":
+        out_temp = round(out_temp, 1)
+    draw_b.text((140, 34), f"{out_temp}C", font=font_mono_data, fill=0)
+    # Outside Trend Triangle (red)
+    if out_trend == "up":
+        draw_r.polygon([(200, 42), (208, 42), (204, 38)], fill=0)
+    else:
+        draw_r.polygon([(200, 38), (208, 38), (204, 42)], fill=0)
+
+    # Draw Humidities below temps
+    draw_b.text((25, 59), f"{in_hum}%", font=font_mono_tiny, fill=0)
+    draw_b.text((145, 55), f"{out_hum}%", font=font_mono_tiny, fill=0)
     
     # Bottom info section
     row_gap = 9
@@ -232,9 +263,7 @@ def update_screen():
     badge_width = right_edge // len(badges)
     badge_height = 14
     badge_gap = 2
-    badges_y = start_y - badge_height - 6 # Leave gap between badges and bottom info
-    
-    draw_r = ImageDraw.Draw(img_r)
+    badges_y = start_y - badge_height - 1 # Tighten gap to 1px to fit larger text
     
     for i, (name, is_ok) in enumerate(badges):
         bx0 = i * badge_width
