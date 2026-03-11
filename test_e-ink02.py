@@ -220,7 +220,7 @@ def update_screen():
 
     draw_b.text((-1, start_y + 0 * row_gap + 8), "00.0", font=font_mono_large, fill=0)
     draw_b.text((71, start_y + 0 * row_gap + 12), "°C", font=font_mono_medium, fill=0)
-    draw_b.text((right_edge - 5, start_y + 0 * row_gap + 12), "▼", font=font_mono_icon, fill=0, anchor="ra")
+    draw_b.text((right_edge - 3, start_y + 0 * row_gap + 12), "▼", font=font_mono_icon, fill=0, anchor="ra")
     draw_b.text((71, start_y + 0 * row_gap + 24), "00.0", font=font_mono_medium, fill=0)
 
     ### Humidity - inside and outside
@@ -295,6 +295,11 @@ def update_screen():
 
     # Vertical orientation
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
+
+    # Save images to disk with timestamp
+    timestamp = time.strftime('%Y%m%d_%H%M%S')
+    img_b.save(os.path.join(script_dir, f"img_b_{timestamp}.png"))
+    img_r.save(os.path.join(script_dir, f"img_r_{timestamp}.png"))
     
     # Send buffers to display
     epd.display(epd.getbuffer(img_b), epd.getbuffer(img_r))
