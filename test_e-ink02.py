@@ -130,7 +130,7 @@ def check_dns():
 def draw_isosceles_triangle(draw, x, y, width, height, direction='down', fill=0):
     """
     Draw an isosceles triangle.
-    (x, y) acts as the center coordinate of the triangle's base.
+    (x, y) acts as the center coordinate of the top edge of the triangle's bounding box.
     """
     # Half-width for calculating base points
     hw = width / 2.0
@@ -139,8 +139,8 @@ def draw_isosceles_triangle(draw, x, y, width, height, direction='down', fill=0)
         # Base is at y. Tip is pointing down (y + height)
         draw.polygon([(x - hw, y), (x + hw, y), (x, y + height)], fill=fill)
     else: # 'up'
-        # Base is at y. Tip is pointing up (y - height)
-        draw.polygon([(x - hw, y), (x + hw, y), (x, y - height)], fill=fill)
+        # Base is at y + height. Tip is pointing up (y)
+        draw.polygon([(x - hw, y + height), (x + hw, y + height), (x, y)], fill=fill)
 
 
 def update_screen():
