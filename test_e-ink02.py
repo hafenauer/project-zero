@@ -210,18 +210,25 @@ def update_screen():
     # Sensor data section
     # to be implemented, left blank for now
 
+    start_y = 38
+    row_gap = 25
+
     ### Temperature - inside and outside
 
-    draw_r.text((-1, 38), "Temperature", font=font_mono_label, fill=0)
+    draw_r.text((-1, start_y), "Temperature", font=font_mono_label, fill=0)
     thermo_icon_path = os.path.join(script_dir, "assets", "images", "thermometer16.png")
     try:
         thermo_icon = Image.open(thermo_icon_path).convert("RGBA")
-        img_b.paste(thermo_icon, (0, 52), thermo_icon)
+        alpha = thermo_icon.split()[3]
+        gray = thermo_icon.convert("L")
+        black_mask = gray.point(lambda p: 255 if p < 220 else 0, mode="L")
+        icon_mask = Image.composite(black_mask, Image.new("L", black_mask.size, 0), alpha)
+        img_b.paste(0, (0, start_y + 0 * row_gap + 12), icon_mask)
     except Exception:
         pass
 
-    draw_b.text((right_edge, 52), "00.0°C", font=font_mono_data, fill=0, anchor="ra")
-    draw_b.text((right_edge, 70), "00.0°C", font=font_mono_tiny, fill=0, anchor="ra")
+    draw_b.text((right_edge, start_y + 0 * row_gap + 14), "00.0°C", font=font_mono_data, fill=0, anchor="ra")
+    draw_b.text((right_edge, start_y + 0 * row_gap + 32), "00.0°C", font=font_mono_tiny, fill=0, anchor="ra")
 
     ### Humidity - inside and outside
 
@@ -230,9 +237,8 @@ def update_screen():
     # Bottom info section
     row_gap = 9
     rows = 3
-    bottom_padding = 0
 
-    start_y = epd.height - bottom_padding - (rows * row_gap)
+    start_y = epd.height - (rows * row_gap)
 
 
     # --- Badges Section ---
