@@ -219,8 +219,8 @@ def update_screen():
     draw_r.text((-1, start_y), "Temperature", font=font_mono_label, fill=0)
 
     draw_b.text((-1, start_y + 0 * row_gap + 8), "00.0", font=font_mono_large, fill=0)
-    draw_b.text((80, start_y + 0 * row_gap + 9), "°C", font=font_mono_medium, fill=0)
-    draw_b.text((80, start_y + 0 * row_gap + 22), "00.0", font=font_mono_medium, fill=0)
+    draw_b.text((69, start_y + 0 * row_gap + 11), "°C", font=font_mono_medium, fill=0)
+    draw_b.text((69, start_y + 0 * row_gap + 23), "00.0", font=font_mono_medium, fill=0)
 
     ### Humidity - inside and outside
 
