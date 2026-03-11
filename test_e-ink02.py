@@ -130,17 +130,18 @@ def check_dns():
 def draw_isosceles_triangle(draw, x, y, width, height, direction='down', fill=0):
     """
     Draw an isosceles triangle.
-    (x, y) acts as the center coordinate of the triangle's base.
+    (x, y) acts as the center coordinate of the triangle's bounding box.
     """
     # Half-width for calculating base points
     hw = width / 2.0
+    hh = height / 2.0
     
     if direction == 'down':
-        # Base is at y. Tip is pointing down (y + height)
-        draw.polygon([(x - hw, y), (x + hw, y), (x, y + height)], fill=fill)
+        # Base is at top (y - hh). Tip is pointing down (y + hh)
+        draw.polygon([(x - hw, y - hh), (x + hw, y - hh), (x, y + hh)], fill=fill)
     else: # 'up'
-        # Base is at y. Tip is pointing up (y - height)
-        draw.polygon([(x - hw, y), (x + hw, y), (x, y - height)], fill=fill)
+        # Base is at bottom (y + hh). Tip is pointing up (y - hh)
+        draw.polygon([(x - hw, y + hh), (x + hw, y + hh), (x, y - hh)], fill=fill)
 
 
 def update_screen():
@@ -172,8 +173,8 @@ def update_screen():
     current_minutes = now.tm_hour * 60 + now.tm_min
     cur_x = int((current_minutes / total_minutes) * right_edge)
     
-    # Draw small triangle pointing down to the timeline (Shifted up: base y=11, height=3 => tip y=14)
-    draw_isosceles_triangle(draw_b, x=cur_x, y=11, width=6, height=3, direction='down', fill=0)
+    # Draw small triangle pointing down to the timeline (Bounding box center at y=12.5, height of 3)
+    draw_isosceles_triangle(draw_b, x=cur_x, y=12.5, width=6, height=3, direction='down', fill=0)
     
     # Draw sun event visualization (barcode style)
     # Tighter spacing: lines are 8px tall (y=16 to y=23), exactly 1px gap
@@ -237,7 +238,7 @@ def update_screen():
     draw_b.text((71, start_y + 0 * row_gap + 12), "°C", font=font_mono_medium, fill=0)
     
     tri_x = right_edge - 8
-    tri_y = start_y + 0 * row_gap + 17
+    tri_y = start_y + 0 * row_gap + 21
     draw_isosceles_triangle(draw_b, x=tri_x, y=tri_y, width=10, height=8, direction='down', fill=0)
     
     draw_b.text((71, start_y + 0 * row_gap + 24), "00.0", font=font_mono_medium, fill=0)
