@@ -204,41 +204,14 @@ def update_screen():
     else:
         draw_b.text((suns_x, 25), sunset_str, font=font_mono_tiny, fill=0, anchor="ma")
 
-    # --- Sensor data section ---
-    data_start_y = 42
-    
-    # Placeholders
-    temp_in = "--.-"
-    temp_out = "--.-"
-    hum_in = "--"
-    hum_out = "--"
-    voc_in = "---"
-    voc_out = "---"
-    nox_in = "--"
-    nox_out = "--"
+    # Sensor data section
+    # to be implemented, left blank for now
 
-    # Headers for IN/OUT
-    draw_b.text((0, data_start_y), "IN", font=font_mono_label, fill=0)
-    draw_b.text((right_edge, data_start_y), "OUT", font=font_mono_label, fill=0, anchor="ra")
+    ### Temperature - inside and outside
 
-    # Temperature - inside and outside
-    temp_y = data_start_y + 16
-    draw_b.text((0, temp_y), f"{temp_in}°", font=font_mono_data, fill=0)
-    draw_b.text((right_edge, temp_y), f"{temp_out}°", font=font_mono_data, fill=0, anchor="ra")
+    ### Humidity - inside and outside
 
-    # Humidity - inside and outside
-    hum_y = temp_y + 26
-    draw_b.text((0, hum_y), f"{hum_in}%", font=font_mono_data, fill=0)
-    draw_b.text((right_edge, hum_y), f"{hum_out}%", font=font_mono_data, fill=0, anchor="ra")
-
-    # Air Quality - VOC/NOx inside and outside score
-    aq_lbl_y = hum_y + 28
-    draw_b.text((0, aq_lbl_y), "VOC/NOx", font=font_mono_tiny, fill=0)
-    draw_b.text((right_edge, aq_lbl_y), "VOC/NOx", font=font_mono_tiny, fill=0, anchor="ra")
-
-    aq_val_y = aq_lbl_y + 10
-    draw_b.text((0, aq_val_y), f"{voc_in}/{nox_in}", font=font_mono_data, fill=0)
-    draw_b.text((right_edge, aq_val_y), f"{voc_out}/{nox_out}", font=font_mono_data, fill=0, anchor="ra")
+    ### Air Quality - VOC/NOx inside and outside score
     
     # Bottom info section
     row_gap = 9
