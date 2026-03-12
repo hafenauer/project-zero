@@ -29,6 +29,8 @@ LAT = "53.5019" # Latitude
 LON = "-1.2690" # Longitude
 GATEWAY_IP = "192.168.1.1" # Local network gateway
 DNS_IP = "192.168.1.22"    # Custom DNS server
+WAN_IP = "1.1.1.1"         # WAN ping target
+DNS_DOMAIN = "cloudflare.com" # DNS check target
 MQTT_BROKER = "192.168.1.27"
 MQTT_PORT = 1883
 MQTT_USER = "hass"
@@ -325,7 +327,7 @@ def check_mqtt():
 
 def check_wan():
     try:
-        subprocess.check_output(["ping", "-c", "1", "-W", "2", "1.1.1.1"], stderr=subprocess.STDOUT)
+        subprocess.check_output(["ping", "-c", "1", "-W", "2", WAN_IP], stderr=subprocess.STDOUT)
         return True
     except Exception:
         return False
@@ -339,7 +341,7 @@ def check_lan():
 
 def check_dns():
     try:
-        output = subprocess.check_output(["dig", f"@{DNS_IP}", "cloudflare.com", "+short"], stderr=subprocess.STDOUT, timeout=3)
+        output = subprocess.check_output(["dig", f"@{DNS_IP}", DNS_DOMAIN, "+short"], stderr=subprocess.STDOUT, timeout=3)
         return len(output.strip()) > 0
     except Exception:
         return False
