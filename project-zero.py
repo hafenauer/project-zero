@@ -208,6 +208,34 @@ mqtt_initialized = False
 hw_lock = threading.Lock()
 
 # --- FETCH FUNCTIONS ---
+def background_update(current_t, current_h, current_voc, current_nox):
+    global last_t, last_h, out_t, out_h, sunr, suns, sunrmins, sunsmins, out_pm25, out_aqi
+    
+    try:
+        out_t, out_h, sunr, suns, sunrmins, sunsmins = get_owm_weather()
+        out_pm25, out_aqi = get_owm_pollution()
+    except Exception as e:
+        print(f"OWM fetch error: {e}")
+
+    t_trend = "up" if last_t is not None and current_t is not None and current_t > last_t else "down" if last_t is not None and current_t is not None and current_t < last_t else None
+    h_trend = "up" if last_h is not None and current_h is not None and current_h > last_h else "down" if last_h is not None and current_h is not None and current_h < last_h else None
+    
+    if current_t is not None: last_t = current_t
+    if current_h is not None: last_h = current_h
+    
+    try:
+        update_screen(
+            in_temp=current_t, in_hum=current_h, 
+            in_voc=current_voc, in_nox=current_nox,
+            out_temp=out_t, out_hum=out_h, 
+            out_pm2=out_pm25, out_aqi=out_aqi,
+            t_trend=t_trend, h_trend=h_trend,
+            sunrise_str=sunr, sunset_str=suns,
+            sunrise_mins=sunrmins, sunset_mins=sunsmins
+        )
+    except Exception as e:
+        print(f"Screen update error: {e}")
+
 def get_owm_weather():
     try:
         url = f"https://api.openweathermap.org/data/2.5/weather?lat={LAT}&lon={LON}&appid={OWM_API_KEY}&units=metric"
@@ -543,34 +571,6 @@ while True:
                 print(f"SGP41 read failed: {e}")
 
         if tick % 180 == 0:
-            def background_update(current_t, current_h, current_voc, current_nox):
-                global last_t, last_h, out_t, out_h, sunr, suns, sunrmins, sunsmins, out_pm25, out_aqi
-                
-                try:
-                    out_t, out_h, sunr, suns, sunrmins, sunsmins = get_owm_weather()
-                    out_pm25, out_aqi = get_owm_pollution()
-                except Exception as e:
-                    print(f"OWM fetch error: {e}")
-
-                t_trend = "up" if last_t is not None and current_t is not None and current_t > last_t else "down" if last_t is not None and current_t is not None and current_t < last_t else None
-                h_trend = "up" if last_h is not None and current_h is not None and current_h > last_h else "down" if last_h is not None and current_h is not None and current_h < last_h else None
-                
-                if current_t is not None: last_t = current_t
-                if current_h is not None: last_h = current_h
-                
-                try:
-                    update_screen(
-                        in_temp=current_t, in_hum=current_h, 
-                        in_voc=current_voc, in_nox=current_nox,
-                        out_temp=out_t, out_hum=out_h, 
-                        out_pm2=out_pm25, out_aqi=out_aqi,
-                        t_trend=t_trend, h_trend=h_trend,
-                        sunrise_str=sunr, sunset_str=suns,
-                        sunrise_mins=sunrmins, sunset_mins=sunsmins
-                    )
-                except Exception as e:
-                    print(f"Screen update error: {e}")
-                    
             threading.Thread(target=background_update, args=(calibrated_t, calibrated_h, voc_index, nox_index)).start()
 
         if tick % 60 == 0:
