@@ -205,6 +205,7 @@ mqtt_client.on_disconnect = on_disconnect
 mqtt_client.loop_start()
 
 mqtt_initialized = False
+hw_lock = threading.Lock()
 
 # --- FETCH FUNCTIONS ---
 def get_owm_weather():
@@ -214,10 +215,11 @@ def get_owm_weather():
         sys_data = res.get('sys', {})
         sunrise_ts = sys_data.get('sunrise')
         sunset_ts = sys_data.get('sunset')
+        tz_offset = res.get('timezone', 0)
         
         if sunrise_ts and sunset_ts:
-            sr_struct = time.localtime(sunrise_ts)
-            ss_struct = time.localtime(sunset_ts)
+            sr_struct = time.gmtime(sunrise_ts + tz_offset)
+            ss_struct = time.gmtime(sunset_ts + tz_offset)
             sunrise_str = time.strftime('%H:%M', sr_struct)
             sunset_str = time.strftime('%H:%M', ss_struct)
             sunrise_mins = sr_struct.tm_hour * 60 + sr_struct.tm_min
@@ -228,7 +230,11 @@ def get_owm_weather():
         temp = res.get('main', {}).get('temp')
         hum = res.get('main', {}).get('humidity')
         return temp, hum, sunrise_str, sunset_str, sunrise_mins, sunset_mins
-    except Exception:
+    except requests.exceptions.RequestException as e:
+        print(f"OWM Weather Request Error: {e}")
+        return None, None, "00:00", "00:00", 360, 1080
+    except Exception as e:
+        print(f"OWM Weather Parse Error: {e}")
         return None, None, "00:00", "00:00", 360, 1080
 
 def get_owm_pollution():
@@ -239,7 +245,11 @@ def get_owm_pollution():
         aqi = list_data.get('main', {}).get('aqi')
         pm2_5 = list_data.get('components', {}).get('pm2_5')
         return pm2_5, aqi
-    except Exception:
+    except requests.exceptions.RequestException as e:
+        print(f"OWM Pollution Request Error: {e}")
+        return None, None
+    except Exception as e:
+        print(f"OWM Pollution Parse Error: {e}")
         return None, None
 
 def get_sys_info():
@@ -318,7 +328,8 @@ def draw_isosceles_triangle(draw, x, y, width, height, direction='down', fill=0)
 def update_screen(in_temp, in_hum, in_voc, in_nox, out_temp, out_hum, out_pm2, out_aqi, t_trend, h_trend, sunrise_str, sunset_str, sunrise_mins, sunset_mins):
     hostname, ip_addr, signal, uptime, cpu_temp, load_avg = get_sys_info()
     
-    epd.init()
+    with hw_lock:
+        epd.init()
     
     img_b = Image.new('1', (epd.width, epd.height), 255)
     img_r = Image.new('1', (epd.width, epd.height), 255)
@@ -491,8 +502,9 @@ def update_screen(in_temp, in_hum, in_voc, in_nox, out_temp, out_hum, out_pm2, o
 
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
 
-    epd.display(epd.getbuffer(img_b), epd.getbuffer(img_r))
-    epd.sleep()
+    with hw_lock:
+        epd.display(epd.getbuffer(img_b), epd.getbuffer(img_r))
+        epd.sleep()
 
 
 # --- MAIN LOOP ---
@@ -508,7 +520,8 @@ while True:
         t, h = None, None
         if sht is not None:
             try:
-                t, h = sht.measurements
+                with hw_lock:
+                    t, h = sht.measurements
             except Exception as e:
                 print(f"SHT45 read failed: {e}")
         
@@ -518,10 +531,11 @@ while True:
         voc_index, nox_index = None, None
         if sgp is not None and voc_algorithm is not None and nox_algorithm is not None:
             try:
-                if calibrated_t is not None and calibrated_h is not None:
-                    raw_voc, raw_nox = sgp.measure_raw(temperature=calibrated_t, relative_humidity=calibrated_h)
-                else:
-                    raw_voc, raw_nox = sgp.measure_raw()
+                with hw_lock:
+                    if calibrated_t is not None and calibrated_h is not None:
+                        raw_voc, raw_nox = sgp.measure_raw(temperature=calibrated_t, relative_humidity=calibrated_h)
+                    else:
+                        raw_voc, raw_nox = sgp.measure_raw()
                 
                 voc_index = voc_algorithm.process(raw_voc)
                 nox_index = nox_algorithm.process(raw_nox)
