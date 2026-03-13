@@ -68,9 +68,9 @@ try:
     font_mono_medium         = ImageFont.truetype(font_path_ibm_plex_mono, 12)
     font_mono_readout_medium = ImageFont.truetype(font_path_roboto_mono_semibold, 13)
     font_mono_readout_large  = ImageFont.truetype(font_path_roboto_mono, 28)
-    font_mono_label          = ImageFont.truetype(font_path_dejavu_sans_mono, 14)
+    font_label               = ImageFont.truetype(font_path_atkinson_hyperlegible_next, 13)
 except Exception:
-    font_mono_tiny = font_mono_small = font_mono_medium = font_mono_readout_medium = font_mono_readout_large = font_mono_label = ImageFont.load_default()
+    font_mono_tiny = font_mono_small = font_mono_medium = font_mono_readout_medium = font_mono_readout_large = font_label = ImageFont.load_default()
 
 # --- SENSORS SETUP ---
 try:
@@ -423,7 +423,7 @@ def update_screen(in_temp, in_hum, in_voc, in_nox, out_temp, out_hum, out_pm2, o
     row_gap = 41
 
     # --- Temperature ---
-    draw_r.text((-1, start_y + 0 * row_gap), "Temperature", font=font_mono_label, fill=0)
+    draw_r.text((-1, start_y + 0 * row_gap), "Temperature", font=font_label, fill=0)
     
     in_temp_str = f"{in_temp:.1f}" if in_temp is not None else "--.-"
     draw_b.text((-1, start_y + 0 * row_gap + 8), in_temp_str, font=font_mono_readout_large, fill=0)
@@ -438,7 +438,7 @@ def update_screen(in_temp, in_hum, in_voc, in_nox, out_temp, out_hum, out_pm2, o
     draw_b.text((71, start_y + 0 * row_gap + 24), out_temp_str, font=font_mono_medium, fill=0)
 
     # --- Humidity ---
-    draw_r.text((-1, start_y + 1 * row_gap), "Humidity", font=font_mono_label, fill=0)
+    draw_r.text((-1, start_y + 1 * row_gap), "Humidity", font=font_label, fill=0)
 
     in_hum_str = f"{in_hum:.1f}" if in_hum is not None else "--.-"
     draw_b.text((-1, start_y + 1 * row_gap + 8), in_hum_str, font=font_mono_readout_large, fill=0)
@@ -453,7 +453,7 @@ def update_screen(in_temp, in_hum, in_voc, in_nox, out_temp, out_hum, out_pm2, o
     draw_b.text((71, start_y + 1 * row_gap + 24), out_hum_str, font=font_mono_medium, fill=0)
 
     # --- Air Quality ---
-    draw_r.text((-1, start_y + 2 * row_gap), "Air Quality", font=font_mono_label, fill=0)
+    draw_r.text((-1, start_y + 2 * row_gap), "Air Quality", font=font_label, fill=0)
 
     in_voc_str = str(in_voc) if in_voc is not None else "---"
     draw_b.text((-1, start_y + 2 * row_gap + 15), "VOC", font=font_mono_small, fill=0)
