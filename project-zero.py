@@ -59,6 +59,7 @@ font_path_roboto_mono = os.path.join(script_dir, "assets", "fonts", "RobotoMono-
 font_path_roboto_mono_semibold = os.path.join(script_dir, "assets", "fonts", "RobotoMono-SemiBold.ttf")
 font_path_ibm_plex_mono = os.path.join(script_dir, "assets", "fonts", "IBMPlexMono-Regular.ttf")
 font_path_dejavu_sans_mono = os.path.join(script_dir, "assets", "fonts", "DejaVuSansMono.ttf")
+font_path_nothing_you_could_do = os.path.join(script_dir, "assets", "fonts", "NothingYouCouldDo-Regular.ttf")
 font_path = font_path_dejavu_sans_mono
 
 try:
@@ -67,7 +68,7 @@ try:
     font_mono_medium         = ImageFont.truetype(font_path_ibm_plex_mono, 12)
     font_mono_readout_medium = ImageFont.truetype(font_path_roboto_mono_semibold, 13)
     font_mono_readout_large  = ImageFont.truetype(font_path_roboto_mono, 28)
-    font_mono_label          = ImageFont.truetype(font_path_atkinson_hyperlegible_next, 12)
+    font_mono_label          = ImageFont.truetype(font_path_nothing_you_could_do, 14)
 except Exception:
     font_mono_tiny = font_mono_small = font_mono_medium = font_mono_readout_medium = font_mono_readout_large = font_mono_label = ImageFont.load_default()
 
