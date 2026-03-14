@@ -530,11 +530,11 @@ def update_screen(in_temp, in_hum, in_voc, in_nox, out_temp, out_hum, out_pm2, o
     draw_b.text((right_edge, start_y + 2 * row_gap), f"{cpu_temp}°C", font=font_mono_tiny, fill=0, anchor="ra")
 
     # Save combined image to disk with timestamp
-    timestamp = time.strftime('%Y%m%d_%H%M%S')
-    img_combined = img_b.convert('RGB')
-    mask_r = img_r.convert('L').point(lambda x: 255 if x < 128 else 0)
-    img_combined.paste((255, 0, 0), (0, 0), mask_r)
-    img_combined.save(os.path.join(script_dir, f"img_combined_{timestamp}.png"))
+    # timestamp = time.strftime('%Y%m%d_%H%M%S')
+    # img_combined = img_b.convert('RGB')
+    # mask_r = img_r.convert('L').point(lambda x: 255 if x < 128 else 0)
+    # img_combined.paste((255, 0, 0), (0, 0), mask_r)
+    # img_combined.save(os.path.join(script_dir, f"img_combined_{timestamp}.png"))
 
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
 
