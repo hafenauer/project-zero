@@ -439,8 +439,8 @@ def update_screen(in_temp, in_hum, in_voc, in_nox, out_temp, out_hum, out_pm2, o
     draw_r.text((-1, start_y + 1 * row_gap), "Humidity", font=font_label, fill=0)
 
     in_hum_str = f"{in_hum:.1f}" if in_hum is not None else "--.-"
-    draw_b.text((-1, start_y + 1 * row_gap + 8), in_hum_str, font=font_mono_readout_large, fill=0, anchor="ls")
-    draw_b.text((71, start_y + 1 * row_gap + 12), "%", font=font_mono_medium, fill=0, anchor="lt")
+    draw_b.text((-1, start_y + 1 * row_gap + 8), in_hum_str, font=font_mono_readout_large, fill=0)
+    draw_b.text((71, start_y + 1 * row_gap + 12), "%", font=font_mono_medium, fill=0)
     
     if h_trend:
         tri_x = right_edge - 8
@@ -448,7 +448,7 @@ def update_screen(in_temp, in_hum, in_voc, in_nox, out_temp, out_hum, out_pm2, o
         draw_isosceles_triangle(draw_r, x=tri_x, y=tri_y, width=10, height=8, direction=h_trend, fill=0)
     
     out_hum_str = f"{out_hum:.1f}" if out_hum is not None else "--.-"
-    draw_b.text((71, start_y + 1 * row_gap + 24), out_hum_str, font=font_mono_medium, fill=0, anchor="ls")
+    draw_b.text((71, start_y + 1 * row_gap + 24), out_hum_str, font=font_mono_medium, fill=0)
 
     # --- Air Quality ---
     draw_r.text((-1, start_y + 2 * row_gap), "Air Quality", font=font_label, fill=0)
