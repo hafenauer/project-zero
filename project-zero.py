@@ -141,16 +141,16 @@ def send_discovery_packet():
     
     voc_config = {**base_config,
         "name": "VOC Index",
+        "device_class": "aqi",
         "state_class": "measurement",
-        "unit_of_measurement": "Index",
         "value_template": "{{ value_json.voc_index }}",
         "unique_id": "projectzero_voc_01"
     }
     
     nox_config = {**base_config,
         "name": "NOx Index",
+        "device_class": "aqi",
         "state_class": "measurement",
-        "unit_of_measurement": "Index",
         "value_template": "{{ value_json.nox_index }}",
         "unique_id": "projectzero_nox_01"
     }
