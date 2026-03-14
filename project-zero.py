@@ -564,7 +564,7 @@ while True:
             try:
                 with hw_lock:
                     if calibrated_t is not None and calibrated_h is not None:
-                        raw_voc, raw_nox = sgp.measure_raw(temperature=calibrated_t, relative_humidity=calibrated_h)
+                        raw_voc, raw_nox = sgp.measure_raw(temperature=calibrated_t, humidity=calibrated_h)
                     else:
                         raw_voc, raw_nox = sgp.measure_raw()
                 
