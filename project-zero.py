@@ -66,7 +66,7 @@ try:
     font_mono_tiny           = ImageFont.truetype(font_path, 9)
     font_mono_small          = ImageFont.truetype(font_path, 10)
     font_mono_medium         = ImageFont.truetype(font_path_ibm_plex_mono, 12)
-    font_mono_readout_medium = ImageFont.truetype(font_path_roboto_mono, 14)
+    font_mono_readout_medium = ImageFont.truetype(font_path_roboto_mono, 13)
     font_mono_readout_large  = ImageFont.truetype(font_path_roboto_mono, 28)
     font_label               = ImageFont.truetype(font_path_atkinson_hyperlegible_next, 13)
 except Exception:
