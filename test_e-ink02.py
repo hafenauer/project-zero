@@ -342,12 +342,11 @@ def update_screen():
     img_b, img_r = img_b.rotate(180), img_r.rotate(180)
 
     # Save combined image to disk with timestamp
-    # timestamp = time.strftime('%Y%m%d_%H%M%S')
-    # img_combined = img_b.convert('RGB')
-    # mask_r = img_r.convert('L').point(lambda x: 255 if x < 128 else 0)
-    # img_combined.paste((255, 0, 0), (0, 0), mask_r)
-    # img_combined = img_combined.rotate(180)
-    # img_combined.save(os.path.join(script_dir, f"img_combined_{timestamp}.png"))
+    timestamp = time.strftime('%Y%m%d_%H%M%S')
+    img_combined = img_b.convert('RGB')
+    mask_r = img_r.convert('L').point(lambda x: 255 if x < 128 else 0)
+    img_combined.paste((255, 0, 0), (0, 0), mask_r)
+    img_combined.save(os.path.join(script_dir, f"img_combined_{timestamp}.png"))
     
     # Send buffers to display
     epd.display(epd.getbuffer(img_b), epd.getbuffer(img_r))
